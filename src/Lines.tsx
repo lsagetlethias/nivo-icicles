@@ -1,27 +1,23 @@
-import { ArcGenerator, ArcsLayer } from '@nivo/arcs';
+import { ArcsLayer } from '@nivo/arcs';
 import { useTooltip } from '@nivo/tooltip';
 import { createElement, useMemo } from 'react';
 import * as React from 'react';
-import { ComputedDatum, SunburstCommonProps, MouseHandlers } from './types';
+import { ComputedDatum, MouseHandlers, IciclesCommonProps } from './types';
 
-interface ArcsProps<RawDatum> {
-    arcGenerator: ArcGenerator;
-    borderColor: SunburstCommonProps<RawDatum>['borderColor'];
-    borderWidth: SunburstCommonProps<RawDatum>['borderWidth'];
-    center: [number, number];
+interface LinesProps<RawDatum> {
+    borderColor: IciclesCommonProps<RawDatum>['borderColor'];
+    borderWidth: IciclesCommonProps<RawDatum>['borderWidth'];
     data: ComputedDatum<RawDatum>[];
-    isInteractive: SunburstCommonProps<RawDatum>['isInteractive'];
+    isInteractive: IciclesCommonProps<RawDatum>['isInteractive'];
     onClick?: MouseHandlers<RawDatum>['onClick'];
     onMouseEnter?: MouseHandlers<RawDatum>['onMouseEnter'];
     onMouseLeave?: MouseHandlers<RawDatum>['onMouseLeave'];
     onMouseMove?: MouseHandlers<RawDatum>['onMouseMove'];
-    tooltip: SunburstCommonProps<RawDatum>['tooltip'];
-    transitionMode: SunburstCommonProps<RawDatum>['transitionMode'];
+    tooltip: IciclesCommonProps<RawDatum>['tooltip'];
 }
-export const Arcs = <RawDatum,>({
-    center,
+
+export const Lines = <RawDatum,>({
     data,
-    arcGenerator,
     borderWidth,
     borderColor,
     isInteractive,
@@ -30,8 +26,7 @@ export const Arcs = <RawDatum,>({
     onMouseMove,
     onMouseLeave,
     tooltip,
-    transitionMode,
-}: ArcsProps<RawDatum>) => {
+}: LinesProps<RawDatum>) => {
     const { showTooltipFromEvent, hideTooltip } = useTooltip();
 
     const handleClick = useMemo(() => {

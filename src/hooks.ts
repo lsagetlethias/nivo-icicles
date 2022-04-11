@@ -103,6 +103,7 @@ export const useSunburst = <RawDatum>({
                     innerRadius: Math.sqrt(descendant.y0),
                     outerRadius: Math.sqrt(descendant.y1),
                 };
+                console.log({ descendant });
 
                 let parent: ComputedDatum<RawDatum> | undefined;
                 if (descendant.parent) {
