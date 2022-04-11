@@ -16,7 +16,7 @@ import {
     SunburstSvgProps,
     SunburstLayerId,
     SunburstLayer,
-    ComputedDatum,
+    SunburstComputedDatum,
 } from './types';
 
 type InnerSunburstProps<RawDatum> = Partial<
@@ -46,7 +46,7 @@ const InnerSunburst = <RawDatum,>({
     colorBy = defaultProps.colorBy,
     inheritColorFromParent = defaultProps.inheritColorFromParent,
     childColor = defaultProps.childColor as InheritedColorConfig<
-        ComputedDatum<RawDatum>
+        SunburstComputedDatum<RawDatum>
     >,
     borderWidth = defaultProps.borderWidth,
     borderColor = defaultProps.borderColor,
@@ -125,7 +125,7 @@ const InnerSunburst = <RawDatum,>({
 
     if (enableArcLabels && layers.includes('arcLabels')) {
         layerById.arcLabels = (
-            <ArcLabelsLayer<ComputedDatum<RawDatum>>
+            <ArcLabelsLayer<SunburstComputedDatum<RawDatum>>
                 key="arcLabels"
                 center={[centerX, centerY]}
                 data={nodes}

@@ -23,12 +23,12 @@ export interface SunburstCustomLayerProps<RawDatum> {
     arcGenerator: ArcGenerator;
     centerX: number;
     centerY: number;
-    nodes: ComputedDatum<RawDatum>[];
+    nodes: SunburstComputedDatum<RawDatum>[];
     radius: number;
 }
 
 export interface IciclesCustomLayerProps<RawDatum> {
-    nodes: ComputedDatum<RawDatum>[];
+    nodes: SunburstComputedDatum<RawDatum>[];
 }
 
 export type SunburstCustomLayer<RawDatum> = React.FC<
@@ -57,7 +57,7 @@ export interface ChildrenDatum<RawDatum> {
     children?: Array<RawDatum & ChildrenDatum<RawDatum>>;
 }
 
-export interface ComputedDatum<RawDatum> {
+export interface SunburstComputedDatum<RawDatum> {
     arc: Arc;
     color: string;
     // contains the raw node's data
@@ -68,7 +68,7 @@ export interface ComputedDatum<RawDatum> {
     formattedValue: string;
     height: number;
     id: DatumId;
-    parent?: ComputedDatum<RawDatum>;
+    parent?: SunburstComputedDatum<RawDatum>;
     // contain own id plus all ancestor ids
     path: DatumId[];
     percentage: number;
@@ -77,13 +77,13 @@ export interface ComputedDatum<RawDatum> {
 
 export type SunburstCommonProps<RawDatum> = {
     animate: boolean;
-    borderColor: InheritedColorConfig<ComputedDatum<RawDatum>>;
+    borderColor: InheritedColorConfig<SunburstComputedDatum<RawDatum>>;
     borderWidth: number;
     // used if `inheritColorFromParent` is `true`
-    childColor: InheritedColorConfig<ComputedDatum<RawDatum>>;
+    childColor: InheritedColorConfig<SunburstComputedDatum<RawDatum>>;
     colorBy: 'id' | 'depth';
     colors: OrdinalColorScaleConfig<
-        Omit<ComputedDatum<RawDatum>, 'color' | 'fill'>
+        Omit<SunburstComputedDatum<RawDatum>, 'color' | 'fill'>
     >;
     cornerRadius: number;
     data: RawDatum;
@@ -98,22 +98,41 @@ export type SunburstCommonProps<RawDatum> = {
     renderWrapper: boolean;
     role: string;
     theme: Theme;
-    tooltip: (props: ComputedDatum<RawDatum>) => JSX.Element;
+    tooltip: (props: SunburstComputedDatum<RawDatum>) => JSX.Element;
     transitionMode: ArcTransitionMode;
     value: PropertyAccessor<RawDatum, number>;
     valueFormat?: ValueFormat<number>;
     width: number;
-} & ArcLabelsProps<ComputedDatum<RawDatum>>;
+} & ArcLabelsProps<SunburstComputedDatum<RawDatum>>;
+
+export interface IciclesComputedDatum<RawDatum> {
+    color: string;
+    // contains the raw node's data
+    data: RawDatum;
+    depth: number;
+    // defined when using patterns or gradients
+    fill?: string;
+    formattedValue: string;
+    height: number;
+    id: DatumId;
+    parent?: IciclesComputedDatum<RawDatum>;
+    // contain own id plus all ancestor ids
+    path: DatumId[];
+    percentage: number;
+    // TODO
+    rect: any;
+    value: number;
+}
 
 export type IciclesCommonProps<RawDatum> = {
     animate: boolean;
-    borderColor: InheritedColorConfig<ComputedDatum<RawDatum>>;
+    borderColor: InheritedColorConfig<IciclesComputedDatum<RawDatum>>;
     borderWidth: number;
     // used if `inheritColorFromParent` is `true`
-    childColor: InheritedColorConfig<ComputedDatum<RawDatum>>;
+    childColor: InheritedColorConfig<IciclesComputedDatum<RawDatum>>;
     colorBy: 'id' | 'depth';
     colors: OrdinalColorScaleConfig<
-        Omit<ComputedDatum<RawDatum>, 'color' | 'fill'>
+        Omit<IciclesComputedDatum<RawDatum>, 'color' | 'fill'>
     >;
     data: RawDatum;
     enableLabels: boolean;
@@ -128,14 +147,19 @@ export type IciclesCommonProps<RawDatum> = {
     renderWrapper: boolean;
     role: string;
     theme: Theme;
-    tooltip: (props: ComputedDatum<RawDatum>) => JSX.Element;
+    tooltip: (props: IciclesComputedDatum<RawDatum>) => JSX.Element;
     value: PropertyAccessor<RawDatum, number>;
     valueFormat?: ValueFormat<number>;
     width: number;
 };
 
+export type IciclesMouseHandler<RawDatum> = (
+    datum: IciclesComputedDatum<RawDatum>,
+    event: React.MouseEvent,
+) => void;
+
 export type MouseHandler<RawDatum> = (
-    datum: ComputedDatum<RawDatum>,
+    datum: SunburstComputedDatum<RawDatum>,
     event: React.MouseEvent,
 ) => void;
 
@@ -146,9 +170,16 @@ export type MouseHandlers<RawDatum> = Partial<{
     onMouseMove: MouseHandler<RawDatum>;
 }>;
 
+export type IciclesMouseHandlers<RawDatum> = Partial<{
+    onClick: IciclesMouseHandler<RawDatum>;
+    onMouseEnter: IciclesMouseHandler<RawDatum>;
+    onMouseLeave: IciclesMouseHandler<RawDatum>;
+    onMouseMove: IciclesMouseHandler<RawDatum>;
+}>;
+
 export type SunburstSvgProps<RawDatum> = SunburstCommonProps<RawDatum> &
     SvgDefsAndFill<RawDatum> &
     MouseHandlers<RawDatum>;
 export type IciclesSvgProps<RawDatum> = IciclesCommonProps<RawDatum> &
     SvgDefsAndFill<RawDatum> &
-    MouseHandlers<RawDatum>;
+    IciclesMouseHandlers<RawDatum>;

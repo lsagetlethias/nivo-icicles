@@ -2,14 +2,18 @@ import { ArcGenerator, ArcsLayer } from '@nivo/arcs';
 import { useTooltip } from '@nivo/tooltip';
 import { createElement, useMemo } from 'react';
 import * as React from 'react';
-import { ComputedDatum, SunburstCommonProps, MouseHandlers } from './types';
+import {
+    SunburstComputedDatum,
+    SunburstCommonProps,
+    MouseHandlers,
+} from './types';
 
 interface ArcsProps<RawDatum> {
     arcGenerator: ArcGenerator;
     borderColor: SunburstCommonProps<RawDatum>['borderColor'];
     borderWidth: SunburstCommonProps<RawDatum>['borderWidth'];
     center: [number, number];
-    data: ComputedDatum<RawDatum>[];
+    data: SunburstComputedDatum<RawDatum>[];
     isInteractive: SunburstCommonProps<RawDatum>['isInteractive'];
     onClick?: MouseHandlers<RawDatum>['onClick'];
     onMouseEnter?: MouseHandlers<RawDatum>['onMouseEnter'];
@@ -38,7 +42,7 @@ export const Arcs = <RawDatum,>({
         if (!isInteractive) return undefined;
 
         return (
-            datum: ComputedDatum<RawDatum>,
+            datum: SunburstComputedDatum<RawDatum>,
             event: React.MouseEvent<SVGPathElement>,
         ) => {
             onClick?.(datum, event);
@@ -49,7 +53,7 @@ export const Arcs = <RawDatum,>({
         if (!isInteractive) return undefined;
 
         return (
-            datum: ComputedDatum<RawDatum>,
+            datum: SunburstComputedDatum<RawDatum>,
             event: React.MouseEvent<SVGPathElement>,
         ) => {
             showTooltipFromEvent(createElement(tooltip, datum), event);
@@ -61,7 +65,7 @@ export const Arcs = <RawDatum,>({
         if (!isInteractive) return undefined;
 
         return (
-            datum: ComputedDatum<RawDatum>,
+            datum: SunburstComputedDatum<RawDatum>,
             event: React.MouseEvent<SVGPathElement>,
         ) => {
             showTooltipFromEvent(createElement(tooltip, datum), event);
@@ -73,7 +77,7 @@ export const Arcs = <RawDatum,>({
         if (!isInteractive) return undefined;
 
         return (
-            datum: ComputedDatum<RawDatum>,
+            datum: SunburstComputedDatum<RawDatum>,
             event: React.MouseEvent<SVGPathElement>,
         ) => {
             hideTooltip();
@@ -82,7 +86,7 @@ export const Arcs = <RawDatum,>({
     }, [isInteractive, hideTooltip, onMouseLeave]);
 
     return (
-        <ArcsLayer<ComputedDatum<RawDatum>>
+        <ArcsLayer<SunburstComputedDatum<RawDatum>>
             center={center}
             data={data}
             arcGenerator={arcGenerator}

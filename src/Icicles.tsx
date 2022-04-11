@@ -15,7 +15,7 @@ import { defaultProps } from './props';
 import {
     SunburstSvgProps,
     SunburstLayerId,
-    ComputedDatum,
+    SunburstComputedDatum,
     IciclesSvgProps,
     IciclesLayerId,
 } from './types';
@@ -61,7 +61,7 @@ const InnerIcicles = <RawDatum,>({
     colorBy = defaultProps.colorBy,
     inheritColorFromParent = defaultProps.inheritColorFromParent,
     childColor = defaultProps.childColor as InheritedColorConfig<
-        ComputedDatum<RawDatum>
+        SunburstComputedDatum<RawDatum>
     >,
     borderWidth = defaultProps.borderWidth,
     borderColor = defaultProps.borderColor,
@@ -129,7 +129,7 @@ const InnerIcicles = <RawDatum,>({
 
     if (enableLabels && layers.includes('labels')) {
         layerById.arcLabels = (
-            <ArcLabelsLayer<ComputedDatum<RawDatum>>
+            <ArcLabelsLayer<SunburstComputedDatum<RawDatum>>
                 key="arcLabels"
                 center={[centerX, centerY]}
                 data={nodes}

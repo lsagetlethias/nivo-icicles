@@ -6,7 +6,11 @@ import { withKnobs, boolean, select } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import { useState } from 'react';
 import React from 'react';
-import { Sunburst, ComputedDatum, SunburstCustomLayerProps } from '../src';
+import {
+    Sunburst,
+    SunburstComputedDatum,
+    SunburstCustomLayerProps,
+} from '../src';
 
 interface RawDatum {
     loc: number;
@@ -66,7 +70,11 @@ stories.add('with formatted tooltip value', () => (
     <Sunburst<RawDatum> {...commonProperties} valueFormat=" >-$,.2f" />
 ));
 
-const CustomTooltip = ({ id, value, color }: ComputedDatum<unknown>) => {
+const CustomTooltip = ({
+    id,
+    value,
+    color,
+}: SunburstComputedDatum<unknown>) => {
     const theme = useTheme();
 
     return (
@@ -119,7 +127,7 @@ stories.add('patterns & gradients', () => (
             {
                 match: node =>
                     ['viz', 'text', 'utils'].includes(
-                        (node as unknown as ComputedDatum<RawDatum>)
+                        (node as unknown as SunburstComputedDatum<RawDatum>)
                             .id as string,
                     ),
                 id: 'gradient',
@@ -127,7 +135,7 @@ stories.add('patterns & gradients', () => (
             {
                 match: node =>
                     ['set', 'generators', 'misc'].includes(
-                        (node as unknown as ComputedDatum<RawDatum>)
+                        (node as unknown as SunburstComputedDatum<RawDatum>)
                             .id as string,
                     ),
                 id: 'pattern',
@@ -161,7 +169,7 @@ const drillDownColorMap = {
     misc: drillDownColors[6],
 };
 const getDrillDownColor = (
-    node: Omit<ComputedDatum<RawDatum>, 'color' | 'fill'>,
+    node: Omit<SunburstComputedDatum<RawDatum>, 'color' | 'fill'>,
 ) => {
     const category = [
         ...node.path,
@@ -262,11 +270,6 @@ stories.add('adding a metric in the center using a custom layer', () => (
     />
 ));
 
-
 stories.add('custom generator', () => (
-    <Sunburst<RawDatum>
-        {...commonProperties}
-        arc
-    />
+    <Sunburst<RawDatum> {...commonProperties} arc />
 ));
-

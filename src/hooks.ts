@@ -14,12 +14,14 @@ import sortBy from 'lodash/sortBy';
 import { useMemo } from 'react';
 import { defaultProps } from './props';
 import {
-    ComputedDatum,
+    SunburstComputedDatum,
     SunburstCommonProps,
     DataProps,
     DatumId,
     SunburstCustomLayerProps,
     IciclesCommonProps,
+    IciclesComputedDatum,
+    IciclesCustomLayerProps,
 } from './types';
 
 export const useSunburst = <RawDatum>({
@@ -33,7 +35,7 @@ export const useSunburst = <RawDatum>({
     colorBy = defaultProps.colorBy,
     inheritColorFromParent = defaultProps.inheritColorFromParent,
     childColor = defaultProps.childColor as InheritedColorConfig<
-        ComputedDatum<RawDatum>
+        SunburstComputedDatum<RawDatum>
     >,
 }: {
     childColor?: SunburstCommonProps<RawDatum>['childColor'];
@@ -49,9 +51,9 @@ export const useSunburst = <RawDatum>({
 }) => {
     const theme = useTheme();
     const getColor = useOrdinalColorScale<
-        Omit<ComputedDatum<RawDatum>, 'color' | 'fill'>
+        Omit<SunburstComputedDatum<RawDatum>, 'color' | 'fill'>
     >(colors, colorBy);
-    const getChildColor = useInheritedColor<ComputedDatum<RawDatum>>(
+    const getChildColor = useInheritedColor<SunburstComputedDatum<RawDatum>>(
         childColor,
         theme,
     );
@@ -60,7 +62,7 @@ export const useSunburst = <RawDatum>({
     const getValue = usePropertyAccessor<RawDatum, number>(value);
     const formatValue = useValueFormatter<number>(valueFormat);
 
-    const nodes: ComputedDatum<RawDatum>[] = useMemo(() => {
+    const nodes: SunburstComputedDatum<RawDatum>[] = useMemo(() => {
         // d3 mutates the data for performance reasons,
         // however it does not work well with reactive programming,
         // this ensures that we don't mutate the input data
@@ -83,7 +85,7 @@ export const useSunburst = <RawDatum>({
         // are going to be computed first
         const sortedNodes = sortBy(descendants, 'depth');
 
-        return sortedNodes.reduce<ComputedDatum<RawDatum>[]>(
+        return sortedNodes.reduce<SunburstComputedDatum<RawDatum>[]>(
             (acc, descendant) => {
                 const id = getId(descendant.data);
                 // d3 hierarchy node value is optional by default as it depends on
@@ -105,7 +107,7 @@ export const useSunburst = <RawDatum>({
                 };
                 console.log({ descendant });
 
-                let parent: ComputedDatum<RawDatum> | undefined;
+                let parent: SunburstComputedDatum<RawDatum> | undefined;
                 if (descendant.parent) {
                     // as the parent is defined by the input data, and we sorted the data
                     // by `depth`, we can safely assume it's defined.
@@ -115,7 +117,7 @@ export const useSunburst = <RawDatum>({
                     );
                 }
 
-                const normalizedNode: ComputedDatum<RawDatum> = {
+                const normalizedNode: SunburstComputedDatum<RawDatum> = {
                     id,
                     path,
                     value,
@@ -194,7 +196,7 @@ export const useIcicles = <RawDatum>({
     colorBy = defaultProps.colorBy,
     inheritColorFromParent = defaultProps.inheritColorFromParent,
     childColor = defaultProps.childColor as InheritedColorConfig<
-        ComputedDatum<RawDatum>
+        IciclesComputedDatum<RawDatum>
     >,
     width,
     height,
@@ -212,9 +214,9 @@ export const useIcicles = <RawDatum>({
 }) => {
     const theme = useTheme();
     const getColor = useOrdinalColorScale<
-        Omit<ComputedDatum<RawDatum>, 'color' | 'fill'>
+        Omit<IciclesComputedDatum<RawDatum>, 'color' | 'fill'>
     >(colors, colorBy);
-    const getChildColor = useInheritedColor<ComputedDatum<RawDatum>>(
+    const getChildColor = useInheritedColor<IciclesComputedDatum<RawDatum>>(
         childColor,
         theme,
     );
@@ -223,15 +225,17 @@ export const useIcicles = <RawDatum>({
     const getValue = usePropertyAccessor<RawDatum, number>(value);
     const formatValue = useValueFormatter<number>(valueFormat);
 
-    const nodes: ComputedDatum<RawDatum>[] = useMemo(() => {
+    // https://observablehq.com/@d3/zoomable-icicle
+    const nodes: IciclesComputedDatum<RawDatum>[] = useMemo(() => {
         // d3 mutates the data for performance reasons,
         // however it does not work well with reactive programming,
         // this ensures that we don't mutate the input data
         const clonedData = cloneDeep(data);
 
         const hierarchy = d3Hierarchy(clonedData).sum(getValue);
+        // .sort((a, b) => b.height - a.height || b.value - a.value);
 
-        const partition = d3Partition<RawDatum>().size([width, height]);
+        const partition = d3Partition<RawDatum>().size([width, height]); // Vertical ?
         // exclude root node
         const descendants = partition(hierarchy).descendants().slice(1);
 
@@ -243,7 +247,7 @@ export const useIcicles = <RawDatum>({
         // are going to be computed first
         const sortedNodes = sortBy(descendants, 'depth');
 
-        return sortedNodes.reduce<ComputedDatum<RawDatum>[]>(
+        return sortedNodes.reduce<IciclesComputedDatum<RawDatum>[]>(
             (acc, descendant) => {
                 const id = getId(descendant.data);
                 // d3 hierarchy node value is optional by default as it depends on
@@ -264,7 +268,7 @@ export const useIcicles = <RawDatum>({
                     outerRadius: Math.sqrt(descendant.y1),
                 };
 
-                let parent: ComputedDatum<RawDatum> | undefined;
+                let parent: IciclesComputedDatum<RawDatum> | undefined;
                 if (descendant.parent) {
                     // as the parent is defined by the input data, and we sorted the data
                     // by `depth`, we can safely assume it's defined.
@@ -274,7 +278,7 @@ export const useIcicles = <RawDatum>({
                     );
                 }
 
-                const normalizedNode: ComputedDatum<RawDatum> = {
+                const normalizedNode: IciclesComputedDatum<RawDatum> = {
                     id,
                     path,
                     value,
@@ -283,7 +287,6 @@ export const useIcicles = <RawDatum>({
                         ? formatValue(value)
                         : `${percentage.toFixed(2)}%`,
                     color: '',
-                    arc,
                     data: descendant.data,
                     depth: descendant.depth,
                     height: descendant.height,
@@ -327,18 +330,10 @@ export const useIcicles = <RawDatum>({
  */
 export const useIciclesLayerContext = <RawDatum>({
     nodes,
-    arcGenerator,
-    centerX,
-    centerY,
-    radius,
-}: SunburstCustomLayerProps<RawDatum>): SunburstCustomLayerProps<RawDatum> =>
+}: IciclesCustomLayerProps<RawDatum>): IciclesCustomLayerProps<RawDatum> =>
     useMemo(
         () => ({
             nodes,
-            arcGenerator,
-            centerX,
-            centerY,
-            radius,
         }),
-        [nodes, arcGenerator, centerX, centerY, radius],
+        [nodes],
     );
