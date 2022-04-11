@@ -1,18 +1,30 @@
 import path from 'path';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, UserConfigExport } from 'vite';
 
-export default defineConfig({
-    plugins: [react()],
-    build: {
-        lib: {
-            formats: ['cjs', 'es'],
-            entry: path.resolve(__dirname, 'src/index.ts'),
-            name: 'nivo-sunburst',
-            fileName: format => `nivo-sunburst.${format}.js`,
+export default defineConfig(({ command, mode }) => {
+    const defaultConfig: UserConfigExport = {
+        plugins: [react()],
+        build: {
+            sourcemap: 'inline',
         },
-        rollupOptions: {
-            external: ['react', 'react-dom', '@nivo-core'],
+    };
+    if (command === 'serve') {
+        return defaultConfig;
+    }
+    return {
+        ...defaultConfig,
+        build: {
+            ...defaultConfig.build,
+            lib: {
+                formats: ['cjs', 'es'],
+                entry: path.resolve(__dirname, 'src/index.ts'),
+                name: 'nivo-sunburst',
+                fileName: format => `nivo-sunburst.${format}.js`,
+            },
+            rollupOptions: {
+                external: ['react', 'react-dom', '@nivo-core'],
+            },
         },
-    },
+    };
 });

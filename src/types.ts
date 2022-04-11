@@ -13,11 +13,13 @@ import {
     ModernMotionProps,
     PropertyAccessor,
 } from '@nivo/core';
+import { RectLabelsProps } from './nivo-rects/rect_labels/props';
+import { Rect } from './nivo-rects/types';
 
 export type DatumId = string | number;
 
 export type SunburstLayerId = 'arcs' | 'arcLabels';
-export type IciclesLayerId = 'node' | 'labels';
+export type IciclesLayerId = 'rects' | 'rectLabels';
 
 export interface SunburstCustomLayerProps<RawDatum> {
     arcGenerator: ArcGenerator;
@@ -28,7 +30,7 @@ export interface SunburstCustomLayerProps<RawDatum> {
 }
 
 export interface IciclesCustomLayerProps<RawDatum> {
-    nodes: SunburstComputedDatum<RawDatum>[];
+    nodes: IciclesComputedDatum<RawDatum>[];
 }
 
 export type SunburstCustomLayer<RawDatum> = React.FC<
@@ -119,8 +121,7 @@ export interface IciclesComputedDatum<RawDatum> {
     // contain own id plus all ancestor ids
     path: DatumId[];
     percentage: number;
-    // TODO
-    rect: any;
+    rect: Rect;
     value: number;
 }
 
@@ -135,15 +136,15 @@ export type IciclesCommonProps<RawDatum> = {
         Omit<IciclesComputedDatum<RawDatum>, 'color' | 'fill'>
     >;
     data: RawDatum;
-    enableLabels: boolean;
+    enableRectLabels: boolean;
     height: number;
     id: PropertyAccessor<RawDatum, DatumId>;
     inheritColorFromParent: boolean;
     isInteractive: boolean;
-    labelsTextColor: InheritedColorConfig<RawDatum>;
     layers: IciclesLayer<RawDatum>[];
     margin?: Box;
     motionConfig: ModernMotionProps['motionConfig'];
+    rectLabelsTextColor: InheritedColorConfig<RawDatum>;
     renderWrapper: boolean;
     role: string;
     theme: Theme;
@@ -151,7 +152,7 @@ export type IciclesCommonProps<RawDatum> = {
     value: PropertyAccessor<RawDatum, number>;
     valueFormat?: ValueFormat<number>;
     width: number;
-};
+} & RectLabelsProps<IciclesComputedDatum<RawDatum>>;
 
 export type IciclesMouseHandler<RawDatum> = (
     datum: IciclesComputedDatum<RawDatum>,

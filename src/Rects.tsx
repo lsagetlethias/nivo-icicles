@@ -1,26 +1,26 @@
-import { ArcsLayer } from '@nivo/arcs';
 import { useTooltip } from '@nivo/tooltip';
 import { createElement, useMemo } from 'react';
 import * as React from 'react';
+import { RectsLayer } from './nivo-rects/RectsLayer';
 import {
-    SunburstComputedDatum,
-    MouseHandlers,
     IciclesCommonProps,
+    IciclesComputedDatum,
+    IciclesMouseHandlers,
 } from './types';
 
-interface LinesProps<RawDatum> {
+interface RectsProps<RawDatum> {
     borderColor: IciclesCommonProps<RawDatum>['borderColor'];
     borderWidth: IciclesCommonProps<RawDatum>['borderWidth'];
-    data: SunburstComputedDatum<RawDatum>[];
+    data: IciclesComputedDatum<RawDatum>[];
     isInteractive: IciclesCommonProps<RawDatum>['isInteractive'];
-    onClick?: MouseHandlers<RawDatum>['onClick'];
-    onMouseEnter?: MouseHandlers<RawDatum>['onMouseEnter'];
-    onMouseLeave?: MouseHandlers<RawDatum>['onMouseLeave'];
-    onMouseMove?: MouseHandlers<RawDatum>['onMouseMove'];
+    onClick?: IciclesMouseHandlers<RawDatum>['onClick'];
+    onMouseEnter?: IciclesMouseHandlers<RawDatum>['onMouseEnter'];
+    onMouseLeave?: IciclesMouseHandlers<RawDatum>['onMouseLeave'];
+    onMouseMove?: IciclesMouseHandlers<RawDatum>['onMouseMove'];
     tooltip: IciclesCommonProps<RawDatum>['tooltip'];
 }
 
-export const Lines = <RawDatum,>({
+export const Rects = <RawDatum,>({
     data,
     borderWidth,
     borderColor,
@@ -30,14 +30,14 @@ export const Lines = <RawDatum,>({
     onMouseMove,
     onMouseLeave,
     tooltip,
-}: LinesProps<RawDatum>) => {
+}: RectsProps<RawDatum>) => {
     const { showTooltipFromEvent, hideTooltip } = useTooltip();
 
     const handleClick = useMemo(() => {
         if (!isInteractive) return undefined;
 
         return (
-            datum: SunburstComputedDatum<RawDatum>,
+            datum: IciclesComputedDatum<RawDatum>,
             event: React.MouseEvent<SVGPathElement>,
         ) => {
             onClick?.(datum, event);
@@ -48,7 +48,7 @@ export const Lines = <RawDatum,>({
         if (!isInteractive) return undefined;
 
         return (
-            datum: SunburstComputedDatum<RawDatum>,
+            datum: IciclesComputedDatum<RawDatum>,
             event: React.MouseEvent<SVGPathElement>,
         ) => {
             showTooltipFromEvent(createElement(tooltip, datum), event);
@@ -60,7 +60,7 @@ export const Lines = <RawDatum,>({
         if (!isInteractive) return undefined;
 
         return (
-            datum: SunburstComputedDatum<RawDatum>,
+            datum: IciclesComputedDatum<RawDatum>,
             event: React.MouseEvent<SVGPathElement>,
         ) => {
             showTooltipFromEvent(createElement(tooltip, datum), event);
@@ -72,7 +72,7 @@ export const Lines = <RawDatum,>({
         if (!isInteractive) return undefined;
 
         return (
-            datum: SunburstComputedDatum<RawDatum>,
+            datum: IciclesComputedDatum<RawDatum>,
             event: React.MouseEvent<SVGPathElement>,
         ) => {
             hideTooltip();
@@ -81,13 +81,10 @@ export const Lines = <RawDatum,>({
     }, [isInteractive, hideTooltip, onMouseLeave]);
 
     return (
-        <ArcsLayer<SunburstComputedDatum<RawDatum>>
-            center={center}
+        <RectsLayer<IciclesComputedDatum<RawDatum>>
             data={data}
-            arcGenerator={arcGenerator}
             borderWidth={borderWidth}
             borderColor={borderColor}
-            transitionMode={transitionMode}
             onClick={handleClick}
             onMouseEnter={handleMouseEnter}
             onMouseMove={handleMouseMove}

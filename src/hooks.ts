@@ -8,10 +8,12 @@ import { usePropertyAccessor, useTheme, useValueFormatter } from '@nivo/core';
 import {
     partition as d3Partition,
     hierarchy as d3Hierarchy,
+    HierarchyRectangularNode,
 } from 'd3-hierarchy';
 import cloneDeep from 'lodash/cloneDeep';
 import sortBy from 'lodash/sortBy';
 import { useMemo } from 'react';
+import { Rect } from './nivo-rects/types';
 import { defaultProps } from './props';
 import {
     SunburstComputedDatum,
@@ -187,6 +189,20 @@ export const useSunburstLayerContext = <RawDatum>({
         [nodes, arcGenerator, centerX, centerY, radius],
     );
 
+// --------
+// --------
+// --------
+// --------
+// --------
+// --------
+// --------
+// --------
+// --------
+// --------
+
+const hierarchyRectHeight = <TDatum>(d: HierarchyRectangularNode<TDatum>) =>
+    d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2);
+
 export const useIcicles = <RawDatum>({
     data,
     id = defaultProps.id,
@@ -237,7 +253,7 @@ export const useIcicles = <RawDatum>({
 
         const partition = d3Partition<RawDatum>().size([width, height]); // Vertical ?
         // exclude root node
-        const descendants = partition(hierarchy).descendants().slice(1);
+        const descendants = partition(hierarchy).descendants();
 
         const total = hierarchy.value ?? 0;
 
@@ -259,13 +275,11 @@ export const useIcicles = <RawDatum>({
                 const percentage = (100 * value) / total;
                 const path = descendant
                     .ancestors()
-                    .map(ancestor => getId(ancestor.data));
+                    ?.map(ancestor => getId(ancestor.data));
 
-                const arc: Arc = {
-                    startAngle: descendant.x0,
-                    endAngle: descendant.x1,
-                    innerRadius: Math.sqrt(descendant.y0),
-                    outerRadius: Math.sqrt(descendant.y1),
+                const rect: Rect = {
+                    height: hierarchyRectHeight(descendant),
+                    width: descendant.y1 - descendant.y0 - 1,
                 };
 
                 let parent: IciclesComputedDatum<RawDatum> | undefined;
@@ -283,6 +297,7 @@ export const useIcicles = <RawDatum>({
                     path,
                     value,
                     percentage,
+                    rect,
                     formattedValue: valueFormat
                         ? formatValue(value)
                         : `${percentage.toFixed(2)}%`,

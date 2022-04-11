@@ -6,11 +6,8 @@ import { withKnobs, boolean, select } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import { useState } from 'react';
 import React from 'react';
-import {
-    Sunburst,
-    SunburstComputedDatum,
-    SunburstCustomLayerProps,
-} from '../src';
+import { IciclesComputedDatum } from '../src';
+import { Icicles } from '../src/Icicles';
 
 interface RawDatum {
     loc: number;
@@ -25,21 +22,21 @@ const commonProperties = {
     value: 'loc',
 };
 
-const stories = storiesOf('Sunburst', module);
+const stories = storiesOf('Icicles', module);
 
 stories.addDecorator(withKnobs);
 
-stories.add('default', () => <Sunburst {...commonProperties} />);
+stories.add('default', () => <Icicles {...commonProperties} />);
 
 stories.add('with child color modifier', () => (
-    <Sunburst<RawDatum>
+    <Icicles<RawDatum>
         {...commonProperties}
         childColor={{ from: 'color', modifiers: [['brighter', 0.13]] }}
     />
 ));
 
 stories.add('with child colors independent of parent', () => (
-    <Sunburst<RawDatum> {...commonProperties} inheritColorFromParent={false} />
+    <Icicles<RawDatum> {...commonProperties} inheritColorFromParent={false} />
 ));
 
 const customPalette = [
@@ -53,11 +50,11 @@ const customPalette = [
 ];
 
 stories.add('with custom colors', () => (
-    <Sunburst<RawDatum> {...commonProperties} colors={customPalette} />
+    <Icicles<RawDatum> {...commonProperties} colors={customPalette} />
 ));
 
 stories.add('with custom child colors', () => (
-    <Sunburst<RawDatum>
+    <Icicles<RawDatum>
         {...commonProperties}
         childColor={(parent, child) => {
             // @ts-expect-error
@@ -67,14 +64,10 @@ stories.add('with custom child colors', () => (
 ));
 
 stories.add('with formatted tooltip value', () => (
-    <Sunburst<RawDatum> {...commonProperties} valueFormat=" >-$,.2f" />
+    <Icicles<RawDatum> {...commonProperties} valueFormat=" >-$,.2f" />
 ));
 
-const CustomTooltip = ({
-    id,
-    value,
-    color,
-}: SunburstComputedDatum<unknown>) => {
+const CustomTooltip = ({ id, value, color }: IciclesComputedDatum<unknown>) => {
     const theme = useTheme();
 
     return (
@@ -85,7 +78,7 @@ const CustomTooltip = ({
 };
 
 stories.add('custom tooltip', () => (
-    <Sunburst<RawDatum>
+    <Icicles<RawDatum>
         {...commonProperties}
         tooltip={CustomTooltip}
         theme={{
@@ -99,7 +92,7 @@ stories.add('custom tooltip', () => (
 ));
 
 stories.add('enter/leave (check actions)', () => (
-    <Sunburst<RawDatum>
+    <Icicles<RawDatum>
         {...commonProperties}
         onMouseEnter={action('onMouseEnter')}
         onMouseLeave={action('onMouseLeave')}
@@ -107,7 +100,7 @@ stories.add('enter/leave (check actions)', () => (
 ));
 
 stories.add('patterns & gradients', () => (
-    <Sunburst<RawDatum>
+    <Icicles<RawDatum>
         {...commonProperties}
         defs={[
             linearGradientDef('gradient', [
@@ -127,7 +120,7 @@ stories.add('patterns & gradients', () => (
             {
                 match: node =>
                     ['viz', 'text', 'utils'].includes(
-                        (node as unknown as SunburstComputedDatum<RawDatum>)
+                        (node as unknown as IciclesComputedDatum<RawDatum>)
                             .id as string,
                     ),
                 id: 'gradient',
@@ -135,7 +128,7 @@ stories.add('patterns & gradients', () => (
             {
                 match: node =>
                     ['set', 'generators', 'misc'].includes(
-                        (node as unknown as SunburstComputedDatum<RawDatum>)
+                        (node as unknown as IciclesComputedDatum<RawDatum>)
                             .id as string,
                     ),
                 id: 'pattern',
@@ -169,7 +162,7 @@ const drillDownColorMap = {
     misc: drillDownColors[6],
 };
 const getDrillDownColor = (
-    node: Omit<SunburstComputedDatum<RawDatum>, 'color' | 'fill'>,
+    node: Omit<IciclesComputedDatum<RawDatum>, 'color' | 'fill'>,
 ) => {
     const category = [
         ...node.path,
@@ -188,7 +181,7 @@ stories.add(
                 <button onClick={() => setData(commonProperties.data)}>
                     Reset
                 </button>
-                <Sunburst<RawDatum>
+                <Icicles<RawDatum>
                     {...commonProperties}
                     colors={getDrillDownColor}
                     inheritColorFromParent={false}
@@ -210,14 +203,12 @@ stories.add(
                         ],
                         'gentle',
                     )}
-                    enableArcLabels
-                    arcLabelsSkipAngle={12}
-                    arcLabelsTextColor={{
+                    enableRectLabels
+                    rectLabelsTextColor={{
                         from: 'color',
                         modifiers: [['darker', 3]],
                     }}
                     data={data}
-                    transitionMode="pushIn"
                     onClick={clickedData => {
                         const foundObject = findObject(
                             flatten(data.children) as any,
@@ -240,32 +231,32 @@ stories.add(
     },
 );
 
-const CenteredMetric = ({
-    nodes,
-    centerX,
-    centerY,
-}: SunburstCustomLayerProps<RawDatum>) => {
-    const total = nodes.reduce((total, datum) => total + datum.value, 0);
+// const CenteredMetric = ({
+//     nodes,
+//     centerX,
+//     centerY,
+// }: IciclesCustomLayerProps<RawDatum>) => {
+//     const total = nodes.reduce((total, datum) => total + datum.value, 0);
 
-    return (
-        <text
-            x={centerX}
-            y={centerY}
-            textAnchor="middle"
-            dominantBaseline="central"
-            style={{
-                fontSize: '42px',
-                fontWeight: 600,
-            }}
-        >
-            {Number.parseFloat(`${total}`).toExponential(2)}
-        </text>
-    );
-};
+//     return (
+//         <text
+//             x={centerX}
+//             y={centerY}
+//             textAnchor="middle"
+//             dominantBaseline="central"
+//             style={{
+//                 fontSize: '42px',
+//                 fontWeight: 600,
+//             }}
+//         >
+//             {Number.parseFloat(`${total}`).toExponential(2)}
+//         </text>
+//     );
+// };
 
-stories.add('adding a metric in the center using a custom layer', () => (
-    <Sunburst<RawDatum>
-        {...commonProperties}
-        layers={['arcs', 'arcLabels', CenteredMetric]}
-    />
-));
+// stories.add('adding a metric in the center using a custom layer', () => (
+//     <Icicles<RawDatum>
+//         {...commonProperties}
+//         layers={['arcs', 'arcLabels', CenteredMetric]}
+//     />
+// ));

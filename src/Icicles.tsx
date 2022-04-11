@@ -1,4 +1,3 @@
-import { ArcLabelsLayer } from '@nivo/arcs';
 import { InheritedColorConfig } from '@nivo/colors';
 import {
     // @ts-ignore
@@ -9,15 +8,15 @@ import {
 } from '@nivo/core';
 import { Fragment, ReactNode, createElement } from 'react';
 import React from 'react';
-import { Arcs } from './Arcs';
-import { useIcicles, useSunburstLayerContext } from './hooks';
-import { defaultProps } from './props';
+import { Rects } from './Rects';
+import { useIcicles, useIciclesLayerContext } from './hooks';
+import { RectLabelsLayer } from './nivo-rects/rect_labels/RectLabelsLayer';
+import { defaultIciclesProps, defaultProps } from './props';
 import {
     SunburstSvgProps,
-    SunburstLayerId,
-    SunburstComputedDatum,
     IciclesSvgProps,
     IciclesLayerId,
+    IciclesComputedDatum,
 } from './types';
 
 type InnerSunburstProps<RawDatum> = Partial<
@@ -53,32 +52,34 @@ type InnerIciclesProps<RawDatum> = Partial<
 
 const InnerIcicles = <RawDatum,>({
     data,
-    id = defaultProps.id,
-    value = defaultProps.value,
+    id = defaultIciclesProps.id,
+    value = defaultIciclesProps.value,
     valueFormat,
-    layers = ['node', 'labels'],
-    colors = defaultProps.colors,
-    colorBy = defaultProps.colorBy,
-    inheritColorFromParent = defaultProps.inheritColorFromParent,
-    childColor = defaultProps.childColor as InheritedColorConfig<
-        SunburstComputedDatum<RawDatum>
+    layers = ['rects', 'rectLabels'],
+    colors = defaultIciclesProps.colors,
+    colorBy = defaultIciclesProps.colorBy,
+    inheritColorFromParent = defaultIciclesProps.inheritColorFromParent,
+    childColor = defaultIciclesProps.childColor as InheritedColorConfig<
+        IciclesComputedDatum<RawDatum>
     >,
-    borderWidth = defaultProps.borderWidth,
-    borderColor = defaultProps.borderColor,
+    borderWidth = defaultIciclesProps.borderWidth,
+    borderColor = defaultIciclesProps.borderColor,
     margin: partialMargin,
     width,
     height,
-    enableLabels = defaultProps.enableArcLabels,
-    labelsTextColor = defaultProps.arcLabelsTextColor,
-    defs = defaultProps.defs,
-    fill = defaultProps.fill,
-    isInteractive = defaultProps.isInteractive,
+    enableRectLabels = defaultIciclesProps.enableRectLabels,
+    rectLabelsTextColor = defaultIciclesProps.rectLabelsTextColor,
+    defs = defaultIciclesProps.defs,
+    fill = defaultIciclesProps.fill,
+    isInteractive = defaultIciclesProps.isInteractive,
     onClick,
     onMouseEnter,
     onMouseLeave,
     onMouseMove,
-    tooltip = defaultProps.tooltip,
-    role = defaultProps.role,
+    tooltip = defaultIciclesProps.tooltip,
+    role = defaultIciclesProps.role,
+    rectLabel = defaultIciclesProps.rectLabel,
+    rectLabelsComponent,
 }: InnerIciclesProps<RawDatum>) => {
     const { innerHeight, innerWidth, margin, outerHeight, outerWidth } =
         useDimensions(width, height, partialMargin);
@@ -103,20 +104,17 @@ const InnerIcicles = <RawDatum,>({
     });
 
     const layerById: Record<IciclesLayerId, ReactNode> = {
-        node: null,
-        labels: null,
+        rects: null,
+        rectLabels: null,
     };
 
-    if (layers.includes('node')) {
-        layerById.node = (
-            <Arcs<RawDatum>
-                key="arcs"
-                center={[centerX, centerY]}
+    if (layers.includes('rects')) {
+        layerById.rects = (
+            <Rects<RawDatum>
+                key="rects"
                 data={nodes}
-                arcGenerator={arcGenerator}
                 borderWidth={borderWidth}
                 borderColor={borderColor}
-                transitionMode={transitionMode}
                 isInteractive={isInteractive}
                 tooltip={tooltip}
                 onClick={onClick}
@@ -127,28 +125,20 @@ const InnerIcicles = <RawDatum,>({
         );
     }
 
-    if (enableLabels && layers.includes('labels')) {
-        layerById.arcLabels = (
-            <ArcLabelsLayer<SunburstComputedDatum<RawDatum>>
-                key="arcLabels"
-                center={[centerX, centerY]}
+    if (enableRectLabels && layers.includes('rectLabels')) {
+        layerById.rectLabels = (
+            <RectLabelsLayer<IciclesComputedDatum<RawDatum>>
+                key="rectLabels"
                 data={nodes}
-                label={arcLabel}
-                radiusOffset={arcLabelsRadiusOffset}
-                skipAngle={arcLabelsSkipAngle}
-                textColor={arcLabelsTextColor}
-                transitionMode={transitionMode}
-                component={arcLabelsComponent}
+                label={rectLabel}
+                textColor={rectLabelsTextColor}
+                component={rectLabelsComponent}
             />
         );
     }
 
-    const layerContext = useSunburstLayerContext<RawDatum>({
+    const layerContext = useIciclesLayerContext<RawDatum>({
         nodes,
-        arcGenerator,
-        centerX,
-        centerY,
-        radius,
     });
 
     return (
@@ -159,9 +149,9 @@ const InnerIcicles = <RawDatum,>({
             margin={margin}
             role={role}
         >
-            {layers.map((layer, i) => {
-                if (layerById[layer as SunburstLayerId] !== undefined) {
-                    return layerById[layer as SunburstLayerId];
+            {layers?.map((layer, i) => {
+                if (layerById[layer as IciclesLayerId] !== undefined) {
+                    return layerById[layer as IciclesLayerId];
                 }
 
                 if (typeof layer === 'function') {
@@ -178,15 +168,15 @@ const InnerIcicles = <RawDatum,>({
     );
 };
 
-export const Sunburst = <RawDatum,>({
+export const Icicles = <RawDatum,>({
     isInteractive = defaultProps.isInteractive,
     animate = defaultProps.animate,
     motionConfig = defaultProps.motionConfig,
     theme,
     renderWrapper,
     ...otherProps
-}: Partial<Omit<SunburstSvgProps<RawDatum>, 'data' | 'width' | 'height'>> &
-    Pick<SunburstSvgProps<RawDatum>, 'data' | 'width' | 'height'>) => (
+}: Partial<Omit<IciclesSvgProps<RawDatum>, 'data' | 'width' | 'height'>> &
+    Pick<IciclesSvgProps<RawDatum>, 'data' | 'width' | 'height'>) => (
     <Container
         {...{ isInteractive, animate, motionConfig, theme, renderWrapper }}
     >
