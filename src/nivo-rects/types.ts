@@ -5,6 +5,7 @@ export interface Point {
 
 export interface Rect {
     height: number;
+    transform: string;
     width: number;
 }
 

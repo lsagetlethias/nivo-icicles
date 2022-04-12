@@ -77,7 +77,7 @@ export const useSunburst = <RawDatum>({
             radius * radius,
         ]);
         // exclude root node
-        const descendants = partition(hierarchy).descendants().slice(1);
+        const descendants = partition(hierarchy).descendants();
 
         const total = hierarchy.value ?? 0;
 
@@ -107,7 +107,6 @@ export const useSunburst = <RawDatum>({
                     innerRadius: Math.sqrt(descendant.y0),
                     outerRadius: Math.sqrt(descendant.y1),
                 };
-                console.log({ descendant });
 
                 let parent: SunburstComputedDatum<RawDatum> | undefined;
                 if (descendant.parent) {
@@ -251,7 +250,7 @@ export const useIcicles = <RawDatum>({
         const hierarchy = d3Hierarchy(clonedData).sum(getValue);
         // .sort((a, b) => b.height - a.height || b.value - a.value);
 
-        const partition = d3Partition<RawDatum>().size([width, height]); // Vertical ?
+        const partition = d3Partition<RawDatum>().size([height, width]); // Vertical ?
         // exclude root node
         const descendants = partition(hierarchy).descendants();
 
@@ -277,9 +276,12 @@ export const useIcicles = <RawDatum>({
                     .ancestors()
                     ?.map(ancestor => getId(ancestor.data));
 
+                const transform = `translate(${descendant.x0}, ${descendant.y0})`;
+
                 const rect: Rect = {
                     height: hierarchyRectHeight(descendant),
                     width: descendant.y1 - descendant.y0 - 1,
+                    transform,
                 };
 
                 let parent: IciclesComputedDatum<RawDatum> | undefined;
@@ -305,20 +307,23 @@ export const useIcicles = <RawDatum>({
                     data: descendant.data,
                     depth: descendant.depth,
                     height: descendant.height,
+                    transform,
                 };
 
-                if (
-                    inheritColorFromParent &&
-                    parent &&
-                    normalizedNode.depth > 1
-                ) {
-                    normalizedNode.color = getChildColor(
-                        parent,
-                        normalizedNode,
-                    );
-                } else {
-                    normalizedNode.color = getColor(normalizedNode);
-                }
+                // if (
+                //     inheritColorFromParent &&
+                //     parent &&
+                //     normalizedNode.depth > 1
+                // ) {
+                //     normalizedNode.color = getChildColor(
+                //         parent,
+                //         normalizedNode,
+                //     );
+                // } else {
+                //     normalizedNode.color = getColor(normalizedNode);
+                // }
+
+                normalizedNode.color = getColor(normalizedNode);
 
                 return [...acc, normalizedNode];
             },

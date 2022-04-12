@@ -19,6 +19,7 @@ export interface RectShapeProps<TDatum extends DatumWithRectAndColor> {
         color: SpringValue<string>;
         height: SpringValue<number>;
         opacity: SpringValue<number>;
+        transform: SpringValue<string>;
         width: SpringValue<number>;
     };
 }
@@ -53,8 +54,10 @@ export const RectShape = <TDatum extends DatumWithRectAndColor>({
 
     return (
         <animated.rect
+            data-id={datum.id}
             opacity={style.opacity}
             fill={datum.fill || style.color}
+            transform={style.transform}
             stroke={style.borderColor}
             strokeWidth={style.borderWidth}
             onClick={onClick ? handleClick : undefined}

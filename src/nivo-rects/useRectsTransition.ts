@@ -43,7 +43,6 @@ export const useRectsTransition = <
 
     const phases = useRectExtraTransition<TDatum, ExtraProps>(extra);
 
-    console.log('toto', { data, phases });
     const transition = useTransition<
         TDatum,
         { height: number; progress: number; width: number } & ExtraProps
@@ -56,7 +55,6 @@ export const useRectsTransition = <
         config: springConfig,
         immediate: !animate,
     });
-    console.log('tata');
 
     return { transition };
 };

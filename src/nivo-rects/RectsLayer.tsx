@@ -38,35 +38,48 @@ export const RectsLayer = <TDatum extends DatumWithRectAndColor>({
         {
             enter: datum => ({
                 opacity: 0,
-                // color: datum.color,
+                color: datum.color,
+                // transform: `translate(${datum.rect.width * datum.depth},)`,
                 // borderColor: getBorderColor(datum),
+                borderColor: '#ccc',
             }),
             update: datum => ({
                 opacity: 1,
-                // color: datum.color,
+                color: datum.color,
+                // transform: `translate(${datum.rect.width * datum.depth},)`,
+
                 // borderColor: getBorderColor(datum),
+                borderColor: '#ccc',
             }),
             leave: datum => ({
                 opacity: 0,
-                // color: datum.color,
+                color: datum.color,
+                // transform: `translate(${datum.rect.width * datum.depth},)`,
+
                 // borderColor: getBorderColor(datum),
+                borderColor: '#ccc',
             }),
         },
     );
-
-    console.log({ transition });
 
     const Rect: RectComponent<TDatum> = component;
 
     return (
         <g>
             {transition((transitionProps, datum) => {
+                console.log({ datum, transitionProps });
+
                 return createElement(Rect, {
                     key: datum.id,
                     datum,
                     style: {
                         ...transitionProps,
                         borderWidth,
+                        // x: datum.depth * datum.rect.width,
+                        // transform: datum,
+                        width: datum.rect.width,
+                        height: datum.rect.height,
+                        transform: datum.rect.transform,
                     },
                     onClick,
                     onMouseEnter,

@@ -1,6 +1,7 @@
 import { generateLibTree } from '@nivo/generators';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Sunburst } from '../src';
 import { Icicles } from '../src/Icicles';
 
 interface RawDatum {
@@ -19,6 +20,7 @@ const commonProperties = {
 ReactDOM.render(
     <>
         <Icicles<RawDatum> {...commonProperties} />
+        <Sunburst<RawDatum> {...commonProperties} />
     </>,
     document.querySelector('#app'),
 );

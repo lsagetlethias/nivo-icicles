@@ -122,6 +122,7 @@ export interface IciclesComputedDatum<RawDatum> {
     path: DatumId[];
     percentage: number;
     rect: Rect;
+    transform: string;
     value: number;
 }
 
