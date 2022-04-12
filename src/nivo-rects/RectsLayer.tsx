@@ -33,54 +33,49 @@ export const RectsLayer = <TDatum extends DatumWithRectAndColor>({
     const theme = useTheme();
     const getBorderColor = useInheritedColor<TDatum>(borderColor, theme);
 
-    const { transition } = useRectsTransition<TDatum, { opacity: number }>(
-        data,
-        {
-            enter: datum => ({
-                opacity: 0,
-                color: datum.color,
-                // transform: `translate(${datum.rect.width * datum.depth},)`,
-                // borderColor: getBorderColor(datum),
-                borderColor: '#ccc',
-            }),
-            update: datum => ({
-                opacity: 1,
-                color: datum.color,
-                // transform: `translate(${datum.rect.width * datum.depth},)`,
-
-                // borderColor: getBorderColor(datum),
-                borderColor: '#ccc',
-            }),
-            leave: datum => ({
-                opacity: 0,
-                color: datum.color,
-                // transform: `translate(${datum.rect.width * datum.depth},)`,
-
-                // borderColor: getBorderColor(datum),
-                borderColor: '#ccc',
-            }),
-        },
-    );
+    const { transition } = useRectsTransition<
+        TDatum,
+        { height: number; opacity: number; width: number }
+    >(data, {
+        enter: datum => ({
+            opacity: 0,
+            color: datum.color,
+            // borderColor: getBorderColor(datum),
+            borderColor: '#ccc',
+            width: datum.rect.width,
+            height: datum.rect.height,
+        }),
+        update: datum => ({
+            opacity: 1,
+            color: datum.color,
+            // borderColor: getBorderColor(datum),
+            borderColor: '#ccc',
+            width: datum.rect.width,
+            height: datum.rect.height,
+        }),
+        leave: datum => ({
+            opacity: 0,
+            color: datum.color,
+            // borderColor: getBorderColor(datum),
+            borderColor: '#ccc',
+            width: datum.rect.width,
+            height: datum.rect.height,
+        }),
+    });
 
     const Rect: RectComponent<TDatum> = component;
 
     return (
         <g>
             {transition((transitionProps, datum) => {
-                console.log({ datum, transitionProps });
-
                 return createElement(Rect, {
                     key: datum.id,
                     datum,
                     style: {
                         ...transitionProps,
                         borderWidth,
-                        // x: datum.depth * datum.rect.width,
-                        // transform: datum,
-                        width: datum.rect.width,
-                        height: datum.rect.height,
                         transform: datum.rect.transform,
-                    },
+                    } as any,
                     onClick,
                     onMouseEnter,
                     onMouseMove,

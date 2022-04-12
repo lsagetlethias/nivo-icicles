@@ -143,8 +143,8 @@ const InnerIcicles = <RawDatum,>({
 
     return (
         <SvgWrapper
-            width={2000}
-            height={2000}
+            width={width}
+            height={height}
             defs={boundDefs}
             margin={margin}
             role={role}

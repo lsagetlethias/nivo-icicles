@@ -199,8 +199,11 @@ export const useSunburstLayerContext = <RawDatum>({
 // --------
 // --------
 
-const hierarchyRectHeight = <TDatum>(d: HierarchyRectangularNode<TDatum>) =>
+const hierarchyRectHorizontal = <TDatum>(d: HierarchyRectangularNode<TDatum>) =>
     d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2);
+
+const hierarchyRectVertical = <TDatum>(d: HierarchyRectangularNode<TDatum>) =>
+    d.y1 - d.y0 - Math.min(1, (d.y1 - d.y0) / 2);
 
 export const useIcicles = <RawDatum>({
     data,
@@ -247,10 +250,12 @@ export const useIcicles = <RawDatum>({
         // this ensures that we don't mutate the input data
         const clonedData = cloneDeep(data);
 
-        const hierarchy = d3Hierarchy(clonedData).sum(getValue);
-        // .sort((a, b) => b.height - a.height || b.value - a.value);
+        const hierarchy = d3Hierarchy(clonedData)
+            .sum(getValue)
+            .sort((a, b) => b.height - a.height || b.value! - a.value!);
 
-        const partition = d3Partition<RawDatum>().size([height, width]); // Vertical ?
+        const partition = d3Partition<RawDatum>().size([width, height]); // Mode horizontal
+        // const partition = d3Partition<RawDatum>().size([height, width]); // Mode horizontal
         // exclude root node
         const descendants = partition(hierarchy).descendants();
 
@@ -276,11 +281,12 @@ export const useIcicles = <RawDatum>({
                     .ancestors()
                     ?.map(ancestor => getId(ancestor.data));
 
-                const transform = `translate(${descendant.x0}, ${descendant.y0})`;
+                const transform = `translate(${descendant.y0}, ${descendant.x0})`;
 
                 const rect: Rect = {
-                    height: hierarchyRectHeight(descendant),
-                    width: descendant.y1 - descendant.y0 - 1,
+                    height: hierarchyRectHorizontal(descendant),
+                    width: hierarchyRectVertical(descendant),
+                    // width: descendant.y1 - descendant.y0 - 1,
                     transform,
                 };
 
@@ -310,20 +316,20 @@ export const useIcicles = <RawDatum>({
                     transform,
                 };
 
-                // if (
-                //     inheritColorFromParent &&
-                //     parent &&
-                //     normalizedNode.depth > 1
-                // ) {
-                //     normalizedNode.color = getChildColor(
-                //         parent,
-                //         normalizedNode,
-                //     );
-                // } else {
-                //     normalizedNode.color = getColor(normalizedNode);
-                // }
+                if (
+                    inheritColorFromParent &&
+                    parent &&
+                    normalizedNode.depth > 1
+                ) {
+                    normalizedNode.color = getChildColor(
+                        parent,
+                        normalizedNode,
+                    );
+                } else {
+                    normalizedNode.color = getColor(normalizedNode);
+                }
 
-                normalizedNode.color = getColor(normalizedNode);
+                // normalizedNode.color = getColor(normalizedNode);
 
                 return [...acc, normalizedNode];
             },

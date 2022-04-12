@@ -19,7 +19,7 @@ export interface RectShapeProps<TDatum extends DatumWithRectAndColor> {
         color: SpringValue<string>;
         height: SpringValue<number>;
         opacity: SpringValue<number>;
-        transform: SpringValue<string>;
+        transform: string;
         width: SpringValue<number>;
     };
 }

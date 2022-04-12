@@ -1,8 +1,9 @@
 import { generateLibTree } from '@nivo/generators';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Sunburst } from '../src';
+import { ResponsiveSunburst } from '../src';
 import { Icicles } from '../src/Icicles';
+import { ResponsiveIcicles } from '../src/ResponsiveIcicles';
 
 interface RawDatum {
     loc: number;
@@ -10,8 +11,6 @@ interface RawDatum {
 }
 
 const commonProperties = {
-    width: 900,
-    height: 500,
     data: generateLibTree() as any,
     id: 'name',
     value: 'loc',
@@ -19,8 +18,10 @@ const commonProperties = {
 
 ReactDOM.render(
     <>
-        <Icicles<RawDatum> {...commonProperties} />
-        <Sunburst<RawDatum> {...commonProperties} />
+        <ResponsiveIcicles<RawDatum> {...commonProperties} />
+        <hr />
+        <Icicles<RawDatum> {...commonProperties} width={2000} height={2000} />
+        <ResponsiveSunburst<RawDatum> {...commonProperties} />
     </>,
     document.querySelector('#app'),
 );
