@@ -281,6 +281,9 @@ export const useIcicles = <RawDatum>({
                     .ancestors()
                     ?.map(ancestor => getId(ancestor.data));
 
+                console.log('descendant ', descendant.x0, descendant.y0);
+
+                // VERTICAL
                 const transform = `translate(${descendant.y0}, ${descendant.x0})`;
 
                 const rect: Rect = {
@@ -289,6 +292,16 @@ export const useIcicles = <RawDatum>({
                     // width: descendant.y1 - descendant.y0 - 1,
                     transform,
                 };
+
+                // HORIZONTAL
+                // const transform = `translate(${descendant.x0}, ${descendant.y0})`;
+
+                // const rect: Rect = {
+                //     height: hierarchyRectVertical(descendant),
+                //     width: hierarchyRectHorizontal(descendant),
+                //     // width: descendant.y1 - descendant.y0 - 1,
+                //     transform,
+                // };
 
                 let parent: IciclesComputedDatum<RawDatum> | undefined;
                 if (descendant.parent) {
