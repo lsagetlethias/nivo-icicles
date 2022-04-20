@@ -19,8 +19,8 @@ export default defineConfig(({ command, mode }) => {
             lib: {
                 formats: ['cjs', 'es'],
                 entry: path.resolve(__dirname, 'src/index.ts'),
-                name: 'nivo-sunburst',
-                fileName: format => `nivo-sunburst.${format}.js`,
+                name: 'nivo-icicles',
+                fileName: format => `nivo-icicles.${format}.js`,
             },
             rollupOptions: {
                 external: ['react', 'react-dom', '@nivo-core'],

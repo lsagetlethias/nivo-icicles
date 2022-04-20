@@ -231,32 +231,12 @@ stories.add(
     },
 );
 
-// const CenteredMetric = ({
-//     nodes,
-//     centerX,
-//     centerY,
-// }: IciclesCustomLayerProps<RawDatum>) => {
-//     const total = nodes.reduce((total, datum) => total + datum.value, 0);
-
-//     return (
-//         <text
-//             x={centerX}
-//             y={centerY}
-//             textAnchor="middle"
-//             dominantBaseline="central"
-//             style={{
-//                 fontSize: '42px',
-//                 fontWeight: 600,
-//             }}
-//         >
-//             {Number.parseFloat(`${total}`).toExponential(2)}
-//         </text>
-//     );
-// };
-
-// stories.add('adding a metric in the center using a custom layer', () => (
-//     <Icicles<RawDatum>
-//         {...commonProperties}
-//         layers={['arcs', 'arcLabels', CenteredMetric]}
-//     />
-// ));
+stories.add('direction top', () => (
+    <Icicles<RawDatum> {...commonProperties} direction="top" />
+));
+stories.add('direction right', () => (
+    <Icicles<RawDatum> {...commonProperties} direction="right" />
+));
+stories.add('direction left', () => (
+    <Icicles<RawDatum> {...commonProperties} direction="left" />
+));

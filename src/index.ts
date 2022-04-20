@@ -1,6 +1,12 @@
-// export * from './Icicles';
-export * from './Sunburst';
-export * from './Arcs';
-export * from './ResponsiveSunburst';
-export * from './SunburstTooltip';
+export * from './Icicles';
+export * from './Rects';
+export * from './ResponsiveIcicles';
+export * from './IciclesTooltip';
 export * from './types';
+export * from './nivo-rects/RectShape';
+export * from './nivo-rects/RectsLayer';
+export * from './nivo-rects/types';
+export * from './nivo-rects/useRectsTransition';
+export * from './nivo-rects/rect_labels/RectLabel';
+export * from './nivo-rects/rect_labels/RectLabelsLayer';
+export * from './nivo-rects/rect_labels/props';

@@ -1,34 +1,6 @@
-import { ArcTransitionMode } from '@nivo/arcs';
 import { OrdinalColorScaleConfig } from '@nivo/colors';
 import { IciclesTooltip } from './IciclesTooltip';
-import { SunburstTooltip } from './SunburstTooltip';
-import { IciclesDirection, IciclesLayerId, SunburstLayerId } from './types';
-
-export const defaultProps = {
-    id: 'id',
-    value: 'value',
-    cornerRadius: 0,
-    layers: ['arcs', 'arcLabels'] as SunburstLayerId[],
-    colors: { scheme: 'nivo' } as unknown as OrdinalColorScaleConfig,
-    colorBy: 'id' as const,
-    inheritColorFromParent: true,
-    childColor: { from: 'color' },
-    borderWidth: 1,
-    borderColor: 'white',
-    enableArcLabels: false,
-    arcLabel: 'formattedValue',
-    arcLabelsRadiusOffset: 0.5,
-    arcLabelsSkipAngle: 0,
-    arcLabelsTextColor: { theme: 'labels.text.fill' },
-    animate: true,
-    motionConfig: 'gentle',
-    transitionMode: 'innerRadius' as ArcTransitionMode,
-    isInteractive: true,
-    defs: [],
-    fill: [],
-    tooltip: SunburstTooltip,
-    role: 'img',
-};
+import { IciclesDirection, IciclesLayerId } from './types';
 
 export const defaultIciclesProps = {
     id: 'id',

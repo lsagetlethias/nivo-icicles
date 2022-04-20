@@ -1,6 +1,7 @@
 import { generateLibTree } from '@nivo/generators';
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+import { IciclesDirection } from '../src';
 import { ResponsiveIcicles } from '../src/ResponsiveIcicles';
 
 interface RawDatum {
@@ -14,17 +15,34 @@ const commonProperties = {
     value: 'loc',
 };
 
-ReactDOM.render(
-    <>
-        <ResponsiveIcicles<RawDatum> {...commonProperties} direction="top" />
-        <hr />
-        {/* <Icicles<RawDatum>
+const App = () => {
+    const [direction, setDirection] = useState<IciclesDirection>('top');
+    return (
+        <>
+            <select
+                onChange={evt =>
+                    setDirection(evt.target.value as IciclesDirection)
+                }
+            >
+                <option value="top">TOP</option>
+                <option value="bottom">BOTTOM</option>
+                <option value="left">LEFT</option>
+                <option value="right">RIGHT</option>
+            </select>
+            <ResponsiveIcicles<RawDatum>
+                {...commonProperties}
+                direction={direction}
+            />
+            <hr />
+            {/* <Icicles<RawDatum>
             {...commonProperties}
             width={2000}
             height={2000}
             direction="right"
         /> */}
-        {/* <ResponsiveSunburst<RawDatum> {...commonProperties} /> */}
-    </>,
-    document.querySelector('#app'),
-);
+            {/* <ResponsiveSunburst<RawDatum> {...commonProperties} /> */}
+        </>
+    );
+};
+
+ReactDOM.render(<App />, document.querySelector('#app'));

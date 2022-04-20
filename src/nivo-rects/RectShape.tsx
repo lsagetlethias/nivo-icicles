@@ -17,10 +17,12 @@ export interface RectShapeProps<TDatum extends DatumWithRectAndColor> {
         borderColor: SpringValue<string>;
         borderWidth: number;
         color: SpringValue<string>;
-        height: SpringValue<number>;
+        height: number;
+        // height: SpringValue<number>;
         opacity: SpringValue<number>;
         transform: string;
-        width: SpringValue<number>;
+        width: number;
+        // width: SpringValue<number>;
     };
 }
 

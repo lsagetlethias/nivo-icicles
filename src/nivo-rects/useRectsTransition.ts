@@ -43,18 +43,18 @@ export const useRectsTransition = <
 
     const phases = useRectExtraTransition<TDatum, ExtraProps>(extra);
 
-    const transition = useTransition<
-        TDatum,
-        { height: number; progress: number; width: number } & ExtraProps
-    >(data, {
-        keys: datum => datum.id,
-        initial: phases.update,
-        from: phases.enter,
-        enter: phases.update,
-        leave: phases.leave,
-        config: springConfig,
-        immediate: !animate,
-    });
+    const transition = useTransition<TDatum, { progress: number } & ExtraProps>(
+        data,
+        {
+            keys: datum => datum.id,
+            initial: phases.update,
+            from: phases.enter,
+            enter: phases.update,
+            leave: phases.leave,
+            config: springConfig,
+            immediate: !animate,
+        },
+    );
 
     return { transition };
 };

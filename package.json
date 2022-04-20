@@ -1,11 +1,17 @@
 {
   "name": "nivo-icicles",
   "version": "1.0.0",
-  "main": "./dist/nivo-sunburst.cjs.js",
-  "module": "./dist/nivo-sunburst.es.js",
+  "main": "./dist/nivo-icicles.cjs.js",
+  "module": "./dist/nivo-icicles.es.js",
   "typings": "./dist/types/index.d.js",
   "author": "Lilian Saget-Lethias <lilian.sagetlethias@gmail.com>",
+  "contributors": [
+    "Mehdi Louraoui <med.louraoui@gmail.com>"
+  ],
   "license": "MIT",
+  "scripts": {
+    "slow": "start-storybook"
+  },
   "dependencies": {
     "@nivo/axes": "^0.79.0",
     "@nivo/colors": "^0.79.1",

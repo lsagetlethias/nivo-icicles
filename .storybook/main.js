@@ -1,7 +1,3 @@
-// const react = require('@vitejs/plugin-react');
-// const { mergeConfig } = require('vite');
-
-
 /** @type {import("@storybook/core-common").CoreConfig} */
 const config = {
     stories: ['../stories/*.stories.tsx'],
@@ -12,14 +8,6 @@ const config = {
         '@storybook/addon-storysource',
     ],
     framework: '@storybook/react',
-    // core: {
-    //     builder: "@storybook/builder-vite"
-    // },
-    // async viteFinal(config, { configType }) {
-    //     return mergeConfig(config, {
-    //         plugins: [react()],
-    //     });
-    // }
 }
 
 module.exports = config;

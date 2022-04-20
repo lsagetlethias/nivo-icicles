@@ -11,29 +11,9 @@ import React from 'react';
 import { Rects } from './Rects';
 import { useIcicles, useIciclesLayerContext } from './hooks';
 import { RectLabelsLayer } from './nivo-rects/rect_labels/RectLabelsLayer';
-import { defaultIciclesProps, defaultProps } from './props';
-import {
-    SunburstSvgProps,
-    IciclesSvgProps,
-    IciclesLayerId,
-    IciclesComputedDatum,
-} from './types';
+import { defaultIciclesProps } from './props';
+import { IciclesSvgProps, IciclesLayerId, IciclesComputedDatum } from './types';
 
-type InnerSunburstProps<RawDatum> = Partial<
-    Omit<
-        SunburstSvgProps<RawDatum>,
-        | 'data'
-        | 'width'
-        | 'height'
-        | 'isInteractive'
-        | 'animate'
-        | 'motionConfig'
-    >
-> &
-    Pick<
-        SunburstSvgProps<RawDatum>,
-        'data' | 'width' | 'height' | 'isInteractive'
-    >;
 type InnerIciclesProps<RawDatum> = Partial<
     Omit<
         IciclesSvgProps<RawDatum>,
@@ -82,8 +62,11 @@ const InnerIcicles = <RawDatum,>({
     rectLabelsComponent,
     direction = defaultIciclesProps.direction,
 }: InnerIciclesProps<RawDatum>) => {
-    const { innerHeight, innerWidth, margin, outerHeight, outerWidth } =
-        useDimensions(width, height, partialMargin);
+    const { margin, outerHeight, outerWidth } = useDimensions(
+        width,
+        height,
+        partialMargin,
+    );
 
     const { nodes } = useIcicles({
         data,
@@ -145,8 +128,8 @@ const InnerIcicles = <RawDatum,>({
 
     return (
         <SvgWrapper
-            width={width}
-            height={height}
+            width={outerWidth}
+            height={outerHeight}
             defs={boundDefs}
             margin={margin}
             role={role}
@@ -171,9 +154,9 @@ const InnerIcicles = <RawDatum,>({
 };
 
 export const Icicles = <RawDatum,>({
-    isInteractive = defaultProps.isInteractive,
-    animate = defaultProps.animate,
-    motionConfig = defaultProps.motionConfig,
+    isInteractive = defaultIciclesProps.isInteractive,
+    animate = defaultIciclesProps.animate,
+    motionConfig = defaultIciclesProps.motionConfig,
     theme,
     renderWrapper,
     ...otherProps
