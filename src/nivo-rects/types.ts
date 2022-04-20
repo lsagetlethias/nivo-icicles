@@ -6,7 +6,12 @@ export interface Point {
 export interface Rect {
     height: number;
     transform: string;
+    transformText: string;
     width: number;
+    x0: number;
+    x1: number;
+    y0: number;
+    y1: number;
 }
 
 export interface DatumWithRect {

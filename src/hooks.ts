@@ -126,6 +126,10 @@ export const useIcicles = <RawDatum>({
                     .ancestors()
                     ?.map(ancestor => getId(ancestor.data));
 
+                const descRect =
+                    widthHeight(descendant)[
+                        isLeftRight ? 'leftRight' : 'topBottom'
+                    ]();
                 const transform = {
                     right: `translate(${descendant.y0}, ${descendant.x0})`,
                     left: `translate(${
@@ -137,11 +141,35 @@ export const useIcicles = <RawDatum>({
                     bottom: `translate(${descendant.x0}, ${descendant.y0})`,
                 }[direction];
 
+                const transformText = {
+                    right: `translate(${descendant.y0 + descRect.width / 2}, ${
+                        descendant.x0 + descRect.height / 2
+                    })`,
+                    left: `translate(${
+                        width -
+                        rootRect.width -
+                        descendant.y0 +
+                        descRect.width / 2
+                    }, ${descendant.x0 + descRect.height / 2})`,
+                    top: `translate(${descendant.x0 + descRect.width / 2}, ${
+                        height -
+                        rootRect.height -
+                        descendant.y0 +
+                        descRect.height / 2
+                    })`,
+                    bottom: `translate(${descendant.x0 + descRect.width / 2}, ${
+                        descendant.y0 + descRect.height / 2
+                    })`,
+                }[direction];
+
                 const rect: Rect = {
-                    ...widthHeight(descendant)[
-                        isLeftRight ? 'leftRight' : 'topBottom'
-                    ](),
+                    ...descRect,
                     transform,
+                    transformText,
+                    x0: descendant.x0,
+                    x1: descendant.x1,
+                    y0: descendant.y0,
+                    y1: descendant.y1,
                 };
 
                 let parent: IciclesComputedDatum<RawDatum> | undefined;

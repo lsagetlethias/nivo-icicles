@@ -32,6 +32,7 @@ const App = () => {
             <ResponsiveIcicles<RawDatum>
                 {...commonProperties}
                 direction={direction}
+                enableRectLabels
             />
             <hr />
             {/* <Icicles<RawDatum>

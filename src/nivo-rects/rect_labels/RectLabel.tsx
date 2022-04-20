@@ -13,6 +13,7 @@ export interface RectLabelProps<TDatum extends DatumWithRectAndColor> {
     style: {
         progress: SpringValue<number>;
         textColor: string;
+        transform: string;
     };
 }
 
@@ -23,7 +24,11 @@ export const RectLabel = <TDatum extends DatumWithRectAndColor>({
     const theme = useTheme();
 
     return (
-        <animated.g opacity={style.progress} style={staticStyle}>
+        <animated.g
+            transform={style.transform}
+            opacity={style.progress}
+            style={staticStyle}
+        >
             <animated.text
                 textAnchor="middle"
                 dominantBaseline="central"

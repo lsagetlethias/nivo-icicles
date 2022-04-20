@@ -29,7 +29,14 @@ export const RectLabelsLayer = <TDatum extends DatumWithRectAndColor>({
 
     // const filteredData = useMemo(() => {}, [])
 
-    const { transition } = useRectsTransition<TDatum>(data);
+    const { transition } = useRectsTransition<TDatum, { transform: string }>(
+        data,
+        {
+            enter: datum => ({}),
+            update: datum => ({}),
+            leave: datum => ({}),
+        },
+    );
 
     const Label: RectLabelComponent<TDatum> = component;
 
@@ -43,6 +50,7 @@ export const RectLabelsLayer = <TDatum extends DatumWithRectAndColor>({
                     style: {
                         ...transitionProps,
                         textColor: getTextColor(datum),
+                        transform: datum.rect.transformText,
                     },
                 });
             })}
