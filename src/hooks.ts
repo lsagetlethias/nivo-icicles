@@ -285,6 +285,7 @@ export const useIcicles = <RawDatum>({
 
                 // VERTICAL
                 const transform = `translate(${descendant.y0}, ${descendant.x0})`;
+                // const width = window.innerWidth * 0.1;
 
                 const rect: Rect = {
                     height: hierarchyRectHorizontal(descendant),
