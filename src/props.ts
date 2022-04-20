@@ -2,7 +2,7 @@ import { ArcTransitionMode } from '@nivo/arcs';
 import { OrdinalColorScaleConfig } from '@nivo/colors';
 import { IciclesTooltip } from './IciclesTooltip';
 import { SunburstTooltip } from './SunburstTooltip';
-import { IciclesLayerId, SunburstLayerId } from './types';
+import { IciclesDirection, IciclesLayerId, SunburstLayerId } from './types';
 
 export const defaultProps = {
     id: 'id',
@@ -50,4 +50,5 @@ export const defaultIciclesProps = {
     fill: [],
     tooltip: IciclesTooltip,
     role: 'img',
+    direction: 'bottom' as IciclesDirection,
 };

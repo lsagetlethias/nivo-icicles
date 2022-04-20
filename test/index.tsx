@@ -16,10 +16,15 @@ const commonProperties = {
 
 ReactDOM.render(
     <>
-        <ResponsiveIcicles<RawDatum> {...commonProperties} />
+        <ResponsiveIcicles<RawDatum> {...commonProperties} direction="top" />
         <hr />
-        {/* <Icicles<RawDatum> {...commonProperties} width={2000} height={2000} />
-        <ResponsiveSunburst<RawDatum> {...commonProperties} /> */}
+        {/* <Icicles<RawDatum>
+            {...commonProperties}
+            width={2000}
+            height={2000}
+            direction="right"
+        /> */}
+        {/* <ResponsiveSunburst<RawDatum> {...commonProperties} /> */}
     </>,
     document.querySelector('#app'),
 );

@@ -80,6 +80,7 @@ const InnerIcicles = <RawDatum,>({
     role = defaultIciclesProps.role,
     rectLabel = defaultIciclesProps.rectLabel,
     rectLabelsComponent,
+    direction = defaultIciclesProps.direction,
 }: InnerIciclesProps<RawDatum>) => {
     const { innerHeight, innerWidth, margin, outerHeight, outerWidth } =
         useDimensions(width, height, partialMargin);
@@ -95,6 +96,7 @@ const InnerIcicles = <RawDatum,>({
         childColor,
         height,
         width,
+        direction,
     });
 
     const boundDefs = bindDefs(defs, nodes, fill, {

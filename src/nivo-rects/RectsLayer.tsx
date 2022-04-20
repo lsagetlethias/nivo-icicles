@@ -33,35 +33,35 @@ export const RectsLayer = <TDatum extends DatumWithRectAndColor>({
     const theme = useTheme();
     const getBorderColor = useInheritedColor<TDatum>(borderColor, theme);
 
-    const { transition } = useRectsTransition<
-        TDatum,
-        { height: number; opacity: number; width: number }
-    >(data, {
-        enter: datum => ({
-            opacity: 0,
-            color: datum.color,
-            // borderColor: getBorderColor(datum),
-            borderColor: '#ccc',
-            width: datum.rect.width,
-            height: datum.rect.height,
-        }),
-        update: datum => ({
-            opacity: 1,
-            color: datum.color,
-            // borderColor: getBorderColor(datum),
-            borderColor: '#ccc',
-            width: datum.rect.width,
-            height: datum.rect.height,
-        }),
-        leave: datum => ({
-            opacity: 0,
-            color: datum.color,
-            // borderColor: getBorderColor(datum),
-            borderColor: '#ccc',
-            width: datum.rect.width,
-            height: datum.rect.height,
-        }),
-    });
+    const { transition } = useRectsTransition<TDatum, { opacity: number }>(
+        data,
+        {
+            enter: datum => ({
+                opacity: 0,
+                color: datum.color,
+                // borderColor: getBorderColor(datum),
+                borderColor: '#ccc',
+                // width: datum.rect.width,
+                // height: datum.rect.height,
+            }),
+            update: datum => ({
+                opacity: 1,
+                color: datum.color,
+                // borderColor: getBorderColor(datum),
+                borderColor: '#ccc',
+                // width: datum.rect.width,
+                // height: datum.rect.height,
+            }),
+            leave: datum => ({
+                opacity: 0,
+                color: datum.color,
+                // borderColor: getBorderColor(datum),
+                borderColor: '#ccc',
+                // width: datum.rect.width,
+                // height: datum.rect.height,
+            }),
+        },
+    );
 
     const Rect: RectComponent<TDatum> = component;
 
@@ -75,6 +75,8 @@ export const RectsLayer = <TDatum extends DatumWithRectAndColor>({
                         ...transitionProps,
                         borderWidth,
                         transform: datum.rect.transform,
+                        width: datum.rect.width,
+                        height: datum.rect.height,
                     } as any,
                     onClick,
                     onMouseEnter,

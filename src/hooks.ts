@@ -199,11 +199,22 @@ export const useSunburstLayerContext = <RawDatum>({
 // --------
 // --------
 
-const hierarchyRectHorizontal = <TDatum>(d: HierarchyRectangularNode<TDatum>) =>
+const hierarchyRectUseX = <TDatum>(d: HierarchyRectangularNode<TDatum>) =>
     d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2);
 
-const hierarchyRectVertical = <TDatum>(d: HierarchyRectangularNode<TDatum>) =>
+const hierarchyRectUseY = <TDatum>(d: HierarchyRectangularNode<TDatum>) =>
     d.y1 - d.y0 - Math.min(1, (d.y1 - d.y0) / 2);
+
+const widthHeight = <TDatum>(d: HierarchyRectangularNode<TDatum>) => ({
+    topBottom: () => ({
+        height: hierarchyRectUseY(d),
+        width: hierarchyRectUseX(d),
+    }),
+    leftRight: () => ({
+        height: hierarchyRectUseX(d),
+        width: hierarchyRectUseY(d),
+    }),
+});
 
 export const useIcicles = <RawDatum>({
     data,
@@ -218,11 +229,13 @@ export const useIcicles = <RawDatum>({
     >,
     width,
     height,
+    direction,
 }: {
     childColor?: IciclesCommonProps<RawDatum>['childColor'];
     colorBy?: IciclesCommonProps<RawDatum>['colorBy'];
     colors?: IciclesCommonProps<RawDatum>['colors'];
     data: DataProps<RawDatum>['data'];
+    direction: IciclesCommonProps<RawDatum>['direction'];
     height: IciclesCommonProps<RawDatum>['height'];
     id?: DataProps<RawDatum>['id'];
     inheritColorFromParent?: IciclesCommonProps<RawDatum>['inheritColorFromParent'];
@@ -239,6 +252,8 @@ export const useIcicles = <RawDatum>({
         theme,
     );
 
+    const isLeftRight = direction === 'left' || direction === 'right';
+
     const getId = usePropertyAccessor<RawDatum, DatumId>(id);
     const getValue = usePropertyAccessor<RawDatum, number>(value);
     const formatValue = useValueFormatter<number>(valueFormat);
@@ -254,8 +269,9 @@ export const useIcicles = <RawDatum>({
             .sum(getValue)
             .sort((a, b) => b.height - a.height || b.value! - a.value!);
 
-        const partition = d3Partition<RawDatum>().size([width, height]); // Mode horizontal
-        // const partition = d3Partition<RawDatum>().size([height, width]); // Mode horizontal
+        const partition = d3Partition<RawDatum>().size(
+            isLeftRight ? [height, width] : [width, height],
+        );
         // exclude root node
         const descendants = partition(hierarchy).descendants();
 
@@ -267,6 +283,13 @@ export const useIcicles = <RawDatum>({
         // are going to be computed first
         const sortedNodes = sortBy(descendants, 'depth');
 
+        const rootRect = {
+            ...widthHeight(sortedNodes[0])[
+                isLeftRight ? 'leftRight' : 'topBottom'
+            ](),
+        };
+
+        let flag = true;
         return sortedNodes.reduce<IciclesComputedDatum<RawDatum>[]>(
             (acc, descendant) => {
                 const id = getId(descendant.data);
@@ -281,29 +304,45 @@ export const useIcicles = <RawDatum>({
                     .ancestors()
                     ?.map(ancestor => getId(ancestor.data));
 
-                console.log('descendant ', descendant.x0, descendant.y0);
-
                 // VERTICAL
-                const transform = `translate(${descendant.y0}, ${descendant.x0})`;
-                // const width = window.innerWidth * 0.1;
+                const transform = {
+                    right: `translate(${descendant.y0}, ${descendant.x0})`,
+                    left: `translate(${
+                        width - rootRect.width - descendant.y0
+                    }, ${descendant.x0})`,
+                    top: `translate(${descendant.x0}, ${
+                        height - rootRect.height - descendant.y0
+                    })`,
+                    bottom: `translate(${descendant.x0}, ${descendant.y0})`,
+                }[direction];
+                // const transform = `translate(${descendant.y0}, ${descendant.x0})`; // direction right
+
+                // const transform = `translate(${
+                //     width - rootRect.width - descendant.y0
+                // }, ${descendant.x0})`; // direction left
+
+                // const transform = `translate(${descendant.x0}, ${descendant.y0})`; // direction bottom
+
+                // const transform = `translate(${descendant.x0}, ${
+                //     height - rootRect.height - descendant.y0
+                // })`; // direction top
 
                 const rect: Rect = {
-                    height: hierarchyRectHorizontal(descendant),
-                    width: hierarchyRectVertical(descendant),
-                    // width: descendant.y1 - descendant.y0 - 1,
+                    ...widthHeight(descendant)[
+                        isLeftRight ? 'leftRight' : 'topBottom'
+                    ](),
                     transform,
                 };
-                // console.log(rect);
-
-                // HORIZONTAL
-                // const transform = `translate(${descendant.x0}, ${descendant.y0})`;
-
-                // const rect: Rect = {
-                //     height: hierarchyRectVertical(descendant),
-                //     width: hierarchyRectHorizontal(descendant),
-                //     // width: descendant.y1 - descendant.y0 - 1,
-                //     transform,
-                // };
+                if (flag) {
+                    console.log('descendant ', {
+                        x0: descendant.x0,
+                        x1: descendant.x1,
+                        y0: descendant.y0,
+                        y1: descendant.y1,
+                    });
+                    console.log(rect);
+                    flag = false;
+                }
 
                 let parent: IciclesComputedDatum<RawDatum> | undefined;
                 if (descendant.parent) {

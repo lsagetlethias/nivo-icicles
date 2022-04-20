@@ -126,6 +126,8 @@ export interface IciclesComputedDatum<RawDatum> {
     value: number;
 }
 
+export type IciclesDirection = 'top' | 'right' | 'bottom' | 'left';
+
 export type IciclesCommonProps<RawDatum> = {
     animate: boolean;
     borderColor: InheritedColorConfig<IciclesComputedDatum<RawDatum>>;
@@ -137,6 +139,7 @@ export type IciclesCommonProps<RawDatum> = {
         Omit<IciclesComputedDatum<RawDatum>, 'color' | 'fill'>
     >;
     data: RawDatum;
+    direction: IciclesDirection;
     enableRectLabels: boolean;
     height: number;
     id: PropertyAccessor<RawDatum, DatumId>;
