@@ -292,6 +292,7 @@ export const useIcicles = <RawDatum>({
                     // width: descendant.y1 - descendant.y0 - 1,
                     transform,
                 };
+                // console.log(rect);
 
                 // HORIZONTAL
                 // const transform = `translate(${descendant.x0}, ${descendant.y0})`;
