@@ -1,5 +1,5 @@
 import { useMotionConfig } from '@nivo/core';
-import { useTransition } from '@react-spring/web';
+import { SpringValue, to, useTransition } from '@react-spring/web';
 import { useMemo } from 'react';
 import { DatumWithRect, DatumWithRectAndColor } from './types';
 
@@ -20,37 +20,27 @@ export const useRectExtraTransition = <
         () => ({
             enter: (datum: TDatum) => ({
                 progress: 0,
-                x0: datum.rect.x0,
-                x1: datum.rect.x1,
-                y0: datum.rect.y0,
-                y1: datum.rect.y1,
-                width: datum.rect.width,
-                height: datum.rect.height,
+                ...datum.rect,
                 ...(extraTransition?.enter(datum) ?? {}),
             }),
             update: (datum: TDatum) => ({
                 progress: 1,
-                x0: datum.rect.x0,
-                x1: datum.rect.x1,
-                y0: datum.rect.y0,
-                y1: datum.rect.y1,
-                width: datum.rect.width,
-                height: datum.rect.height,
+                ...datum.rect,
                 ...(extraTransition?.update(datum) ?? {}),
             }),
             leave: (datum: TDatum) => ({
                 progress: 0,
-                x0: datum.rect.x0,
-                x1: datum.rect.x1,
-                y0: datum.rect.y0,
-                y1: datum.rect.y1,
-                width: datum.rect.width,
-                height: datum.rect.height,
+                ...datum.rect,
                 ...(extraTransition?.leave(datum) ?? {}),
             }),
         }),
         [extraTransition],
     );
+
+export const interpolateRect = (
+    transformXValue: SpringValue<number>,
+    transformYValue: SpringValue<number>,
+) => to([transformXValue, transformYValue], (x, y) => `translate(${x}, ${y})`);
 
 export const useRectsTransition = <
     TDatum extends DatumWithRectAndColor,
@@ -68,6 +58,8 @@ export const useRectsTransition = <
         {
             height: number;
             progress: number;
+            transformX: number;
+            transformY: number;
             width: number;
             x0: number;
             x1: number;
@@ -79,10 +71,14 @@ export const useRectsTransition = <
         initial: phases.update,
         from: phases.enter,
         enter: phases.update,
+        update: phases.update,
         leave: phases.leave,
         config: springConfig,
         immediate: !animate,
     });
 
-    return { transition };
+    return {
+        transition,
+        interpolate: interpolateRect,
+    };
 };

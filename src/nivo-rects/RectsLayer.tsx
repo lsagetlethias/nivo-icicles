@@ -27,14 +27,19 @@ export const RectsLayer = <TDatum extends DatumWithRectAndColor>({
     onClick,
     borderWidth,
     data,
+    borderColor,
     component = RectShape,
 }: RectsLayerProps<TDatum>) => {
     // const theme = useTheme();
     // const getBorderColor = useInheritedColor<TDatum>(borderColor, theme);
 
-    const { transition } = useRectsTransition<
+    const { transition, interpolate } = useRectsTransition<
         TDatum,
-        { borderColor: string; color: string; opacity: number }
+        {
+            borderColor: string;
+            color: string;
+            opacity: number;
+        }
     >(data, {
         enter: datum => ({
             opacity: 0,
@@ -67,7 +72,10 @@ export const RectsLayer = <TDatum extends DatumWithRectAndColor>({
                     style: {
                         ...transitionProps,
                         borderWidth,
-                        transform: datum.rect.transform,
+                        transform: interpolate(
+                            transitionProps.transformX,
+                            transitionProps.transformY,
+                        ),
                         width: datum.rect.width,
                         height: datum.rect.height,
                     },

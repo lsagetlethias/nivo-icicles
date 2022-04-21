@@ -1,4 +1,4 @@
-import { SpringValue, animated } from '@react-spring/web';
+import { SpringValue, animated, Interpolation } from '@react-spring/web';
 import React, { useCallback } from 'react';
 import { DatumWithRectAndColor } from './types';
 
@@ -18,12 +18,9 @@ export interface RectShapeProps<TDatum extends DatumWithRectAndColor> {
         borderWidth: number;
         color: SpringValue<string>;
         height: number;
-        // height: Interpolation<number>;
         opacity: SpringValue<number>;
-        transform: string;
-        // transform: Interpolation<string>;
+        transform: Interpolation<string>;
         width: number;
-        // width: Interpolation<number>;
     };
 }
 

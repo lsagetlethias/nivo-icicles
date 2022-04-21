@@ -22,20 +22,17 @@ import {
     IciclesCustomLayerProps,
 } from './types';
 
-const hierarchyRectUseX = <TDatum>(d: HierarchyRectangularNode<TDatum>) =>
-    d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2);
-
-const hierarchyRectUseY = <TDatum>(d: HierarchyRectangularNode<TDatum>) =>
-    d.y1 - d.y0 - Math.min(1, (d.y1 - d.y0) / 2);
+const computeLength = (a: number, b: number) =>
+    b - a - Math.min(1, (b - a) / 2);
 
 const widthHeight = <TDatum>(d: HierarchyRectangularNode<TDatum>) => ({
     topBottom: () => ({
-        height: hierarchyRectUseY(d),
-        width: hierarchyRectUseX(d),
+        height: computeLength(d.y0, d.y1),
+        width: computeLength(d.x0, d.x1),
     }),
     leftRight: () => ({
-        height: hierarchyRectUseX(d),
-        width: hierarchyRectUseY(d),
+        height: computeLength(d.x0, d.x1),
+        width: computeLength(d.y0, d.y1),
     }),
 });
 
@@ -153,13 +150,13 @@ export const useIcicles = <RawDatum>({
                         y0 = isLeftRight ? descendant.x0 : descendant.y0,
                         y1 = isLeftRight ? descendant.x1 : descendant.y1;
 
-                    const transform = `translate(${Math.abs(
-                        rectOffsetLeft - x0,
-                    )}, ${Math.abs(rectOffsetTop - y0)})`;
+                    const transformX = Math.abs(rectOffsetLeft - x0);
+                    const transformY = Math.abs(rectOffsetTop - y0);
 
                     const rect: Rect = {
                         ...descRect,
-                        transform,
+                        transformX,
+                        transformY,
                         x0,
                         x1,
                         y0,

@@ -1,4 +1,5 @@
 import { generateLibTree } from '@nivo/generators';
+import { config as springConfig } from '@react-spring/web';
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { IciclesDirection } from '../src';
@@ -17,6 +18,7 @@ const commonProperties = {
 
 const App = () => {
     const [direction, setDirection] = useState<IciclesDirection>('top');
+    const [config, setConfig] = useState<keyof typeof springConfig>('default');
     return (
         <>
             <select
@@ -29,11 +31,23 @@ const App = () => {
                 <option value="left">LEFT</option>
                 <option value="right">RIGHT</option>
             </select>
+            <select
+                onChange={evt =>
+                    setConfig(evt.target.value as keyof typeof springConfig)
+                }
+            >
+                {Object.keys(springConfig).map(c => (
+                    <option value={c} key={`spring-${c}`}>
+                        {c}
+                    </option>
+                ))}
+            </select>
             <ResponsiveIcicles<RawDatum>
                 {...commonProperties}
                 direction={direction}
                 enableRectLabels
                 rectLabelsSkipPercentage={3}
+                motionConfig={config}
             />
             <hr />
             {/* <Icicles<RawDatum>
