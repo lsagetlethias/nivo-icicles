@@ -52,7 +52,6 @@ export interface IciclesComputedDatum<RawDatum> {
     path: DatumId[];
     percentage: number;
     rect: Rect;
-    transform: string;
     value: number;
 }
 
@@ -78,6 +77,9 @@ export type IciclesCommonProps<RawDatum> = {
     layers: IciclesLayer<RawDatum>[];
     margin?: Box;
     motionConfig: ModernMotionProps['motionConfig'];
+    rectLabelsOffset: number;
+    rectLabelsSkipLength: number;
+    rectLabelsSkipPercentage: number;
     rectLabelsTextColor: InheritedColorConfig<RawDatum>;
     renderWrapper: boolean;
     role: string;

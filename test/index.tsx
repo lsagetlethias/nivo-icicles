@@ -33,6 +33,7 @@ const App = () => {
                 {...commonProperties}
                 direction={direction}
                 enableRectLabels
+                rectLabelsSkipPercentage={3}
             />
             <hr />
             {/* <Icicles<RawDatum>

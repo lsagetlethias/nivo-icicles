@@ -23,4 +23,7 @@ export const defaultIciclesProps = {
     tooltip: IciclesTooltip,
     role: 'img',
     direction: 'bottom' as IciclesDirection,
+    rectLabelsSkipLength: 0,
+    rectLabelsSkipPercentage: 0,
+    rectLabelsOffset: 1,
 };

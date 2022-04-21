@@ -8,8 +8,10 @@ export interface TransitionExtra<TDatum extends DatumWithRect, ExtraProps> {
     leave: (datum: TDatum) => ExtraProps;
     update: (datum: TDatum) => ExtraProps;
 }
-const useRectExtraTransition = <
-    TDatum extends DatumWithRectAndColor,
+
+// TODO: mode ?
+export const useRectExtraTransition = <
+    TDatum extends DatumWithRect,
     ExtraProps,
 >(
     extraTransition?: TransitionExtra<TDatum, ExtraProps>,
@@ -18,14 +20,32 @@ const useRectExtraTransition = <
         () => ({
             enter: (datum: TDatum) => ({
                 progress: 0,
+                x0: datum.rect.x0,
+                x1: datum.rect.x1,
+                y0: datum.rect.y0,
+                y1: datum.rect.y1,
+                width: datum.rect.width,
+                height: datum.rect.height,
                 ...(extraTransition?.enter(datum) ?? {}),
             }),
             update: (datum: TDatum) => ({
                 progress: 1,
+                x0: datum.rect.x0,
+                x1: datum.rect.x1,
+                y0: datum.rect.y0,
+                y1: datum.rect.y1,
+                width: datum.rect.width,
+                height: datum.rect.height,
                 ...(extraTransition?.update(datum) ?? {}),
             }),
             leave: (datum: TDatum) => ({
                 progress: 0,
+                x0: datum.rect.x0,
+                x1: datum.rect.x1,
+                y0: datum.rect.y0,
+                y1: datum.rect.y1,
+                width: datum.rect.width,
+                height: datum.rect.height,
                 ...(extraTransition?.leave(datum) ?? {}),
             }),
         }),
@@ -43,18 +63,26 @@ export const useRectsTransition = <
 
     const phases = useRectExtraTransition<TDatum, ExtraProps>(extra);
 
-    const transition = useTransition<TDatum, { progress: number } & ExtraProps>(
-        data,
+    const transition = useTransition<
+        TDatum,
         {
-            keys: datum => datum.id,
-            initial: phases.update,
-            from: phases.enter,
-            enter: phases.update,
-            leave: phases.leave,
-            config: springConfig,
-            immediate: !animate,
-        },
-    );
+            height: number;
+            progress: number;
+            width: number;
+            x0: number;
+            x1: number;
+            y0: number;
+            y1: number;
+        } & ExtraProps
+    >(data, {
+        keys: datum => datum.id,
+        initial: phases.update,
+        from: phases.enter,
+        enter: phases.update,
+        leave: phases.leave,
+        config: springConfig,
+        immediate: !animate,
+    });
 
     return { transition };
 };

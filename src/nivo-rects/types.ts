@@ -5,8 +5,8 @@ export interface Point {
 
 export interface Rect {
     height: number;
+    percentage: number;
     transform: string;
-    transformText: string;
     width: number;
     x0: number;
     x1: number;

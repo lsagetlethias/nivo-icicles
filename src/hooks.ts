@@ -82,7 +82,15 @@ export const useIcicles = <RawDatum>({
     const formatValue = useValueFormatter<number>(valueFormat);
 
     // https://observablehq.com/@d3/zoomable-icicle
-    const nodes: IciclesComputedDatum<RawDatum>[] = useMemo(() => {
+    const {
+        nodes,
+        baseOffsetTop,
+        baseOffsetLeft,
+    }: {
+        baseOffsetLeft: number;
+        baseOffsetTop: number;
+        nodes: IciclesComputedDatum<RawDatum>[];
+    } = useMemo(() => {
         // d3 mutates the data for performance reasons,
         // however it does not work well with reactive programming,
         // this ensures that we don't mutate the input data
@@ -111,112 +119,97 @@ export const useIcicles = <RawDatum>({
                 isLeftRight ? 'leftRight' : 'topBottom'
             ](),
         };
+        const baseOffsetLeft = direction === 'left' ? width : 0;
+        const baseOffsetTop = direction === 'top' ? height : 0;
+        const rectOffsetLeft =
+            direction === 'left' ? baseOffsetLeft - rootRect.width : 0;
+        const rectOffsetTop =
+            direction === 'top' ? baseOffsetTop - rootRect.height : 0;
 
-        return sortedNodes.reduce<IciclesComputedDatum<RawDatum>[]>(
-            (acc, descendant) => {
-                const id = getId(descendant.data);
-                // d3 hierarchy node value is optional by default as it depends on
-                // a call to `count()` or `sum()`, and we previously called `sum()`,
-                // d3 typings could be improved and make it non optional when calling
-                // one of those.
+        return {
+            baseOffsetLeft,
+            baseOffsetTop,
+            nodes: sortedNodes.reduce<IciclesComputedDatum<RawDatum>[]>(
+                (acc, descendant) => {
+                    const id = getId(descendant.data);
+                    // d3 hierarchy node value is optional by default as it depends on
+                    // a call to `count()` or `sum()`, and we previously called `sum()`,
+                    // d3 typings could be improved and make it non optional when calling
+                    // one of those.
 
-                const value = descendant.value!;
-                const percentage = (100 * value) / total;
-                const path = descendant
-                    .ancestors()
-                    ?.map(ancestor => getId(ancestor.data));
+                    const value = descendant.value!;
+                    const percentage = (100 * value) / total;
+                    const path = descendant
+                        .ancestors()
+                        ?.map(ancestor => getId(ancestor.data));
 
-                const descRect =
-                    widthHeight(descendant)[
-                        isLeftRight ? 'leftRight' : 'topBottom'
-                    ]();
-                const transform = {
-                    right: `translate(${descendant.y0}, ${descendant.x0})`,
-                    left: `translate(${
-                        width - rootRect.width - descendant.y0
-                    }, ${descendant.x0})`,
-                    top: `translate(${descendant.x0}, ${
-                        height - rootRect.height - descendant.y0
-                    })`,
-                    bottom: `translate(${descendant.x0}, ${descendant.y0})`,
-                }[direction];
+                    const descRect =
+                        widthHeight(descendant)[
+                            isLeftRight ? 'leftRight' : 'topBottom'
+                        ]();
 
-                const transformText = {
-                    right: `translate(${descendant.y0 + descRect.width / 2}, ${
-                        descendant.x0 + descRect.height / 2
-                    })`,
-                    left: `translate(${
-                        width -
-                        rootRect.width -
-                        descendant.y0 +
-                        descRect.width / 2
-                    }, ${descendant.x0 + descRect.height / 2})`,
-                    top: `translate(${descendant.x0 + descRect.width / 2}, ${
-                        height -
-                        rootRect.height -
-                        descendant.y0 +
-                        descRect.height / 2
-                    })`,
-                    bottom: `translate(${descendant.x0 + descRect.width / 2}, ${
-                        descendant.y0 + descRect.height / 2
-                    })`,
-                }[direction];
+                    const x0 = isLeftRight ? descendant.y0 : descendant.x0,
+                        x1 = isLeftRight ? descendant.y1 : descendant.x1,
+                        y0 = isLeftRight ? descendant.x0 : descendant.y0,
+                        y1 = isLeftRight ? descendant.x1 : descendant.y1;
 
-                const rect: Rect = {
-                    ...descRect,
-                    transform,
-                    transformText,
-                    x0: descendant.x0,
-                    x1: descendant.x1,
-                    y0: descendant.y0,
-                    y1: descendant.y1,
-                };
+                    const transform = `translate(${Math.abs(
+                        rectOffsetLeft - x0,
+                    )}, ${Math.abs(rectOffsetTop - y0)})`;
 
-                let parent: IciclesComputedDatum<RawDatum> | undefined;
-                if (descendant.parent) {
-                    // as the parent is defined by the input data, and we sorted the data
-                    // by `depth`, we can safely assume it's defined.
+                    const rect: Rect = {
+                        ...descRect,
+                        transform,
+                        x0,
+                        x1,
+                        y0,
+                        y1,
+                        percentage,
+                    };
 
-                    parent = acc.find(
-                        node => node.id === getId(descendant.parent!.data),
-                    );
-                }
+                    let parent: IciclesComputedDatum<RawDatum> | undefined;
+                    if (descendant.parent) {
+                        // as the parent is defined by the input data, and we sorted the data
+                        // by `depth`, we can safely assume it's defined.
 
-                const normalizedNode: IciclesComputedDatum<RawDatum> = {
-                    id,
-                    path,
-                    value,
-                    percentage,
-                    rect,
-                    formattedValue: valueFormat
-                        ? formatValue(value)
-                        : `${percentage.toFixed(2)}%`,
-                    color: '',
-                    data: descendant.data,
-                    depth: descendant.depth,
-                    height: descendant.height,
-                    transform,
-                };
+                        parent = acc.find(
+                            node => node.id === getId(descendant.parent!.data),
+                        );
+                    }
 
-                if (
-                    inheritColorFromParent &&
-                    parent &&
-                    normalizedNode.depth > 1
-                ) {
-                    normalizedNode.color = getChildColor(
-                        parent,
-                        normalizedNode,
-                    );
-                } else {
-                    normalizedNode.color = getColor(normalizedNode);
-                }
+                    const normalizedNode: IciclesComputedDatum<RawDatum> = {
+                        id,
+                        path,
+                        value,
+                        percentage,
+                        rect,
+                        formattedValue: valueFormat
+                            ? formatValue(value)
+                            : `${percentage.toFixed(2)}%`,
+                        color: '',
+                        data: descendant.data,
+                        depth: descendant.depth,
+                        height: descendant.height,
+                    };
 
-                // normalizedNode.color = getColor(normalizedNode);
+                    if (
+                        inheritColorFromParent &&
+                        parent &&
+                        normalizedNode.depth > 1
+                    ) {
+                        normalizedNode.color = getChildColor(
+                            parent,
+                            normalizedNode,
+                        );
+                    } else {
+                        normalizedNode.color = getColor(normalizedNode);
+                    }
 
-                return [...acc, normalizedNode];
-            },
-            [],
-        );
+                    return [...acc, normalizedNode];
+                },
+                [],
+            ),
+        };
     }, [
         data,
         getValue,
@@ -232,7 +225,7 @@ export const useIcicles = <RawDatum>({
         isLeftRight,
     ]);
 
-    return { nodes };
+    return { nodes, baseOffsetLeft, baseOffsetTop };
 };
 
 /**

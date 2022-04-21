@@ -6,7 +6,7 @@ import {
     SvgWrapper,
     useDimensions,
 } from '@nivo/core';
-import { Fragment, ReactNode, createElement } from 'react';
+import { Fragment, ReactNode, createElement, useMemo } from 'react';
 import React from 'react';
 import { Rects } from './Rects';
 import { useIcicles, useIciclesLayerContext } from './hooks';
@@ -60,7 +60,10 @@ const InnerIcicles = <RawDatum,>({
     role = defaultIciclesProps.role,
     rectLabel = defaultIciclesProps.rectLabel,
     rectLabelsComponent,
+    rectLabelsSkipLength = defaultIciclesProps.rectLabelsSkipLength,
+    rectLabelsSkipPercentage = defaultIciclesProps.rectLabelsSkipPercentage,
     direction = defaultIciclesProps.direction,
+    rectLabelsOffset = defaultIciclesProps.rectLabelsOffset,
 }: InnerIciclesProps<RawDatum>) => {
     const { margin, outerHeight, outerWidth } = useDimensions(
         width,
@@ -68,7 +71,7 @@ const InnerIcicles = <RawDatum,>({
         partialMargin,
     );
 
-    const { nodes } = useIcicles({
+    const { nodes, baseOffsetLeft, baseOffsetTop } = useIcicles({
         data,
         id,
         value,
@@ -77,8 +80,8 @@ const InnerIcicles = <RawDatum,>({
         colorBy,
         inheritColorFromParent,
         childColor,
-        height,
-        width,
+        height: outerHeight,
+        width: outerWidth,
         direction,
     });
 
@@ -110,14 +113,32 @@ const InnerIcicles = <RawDatum,>({
         );
     }
 
+    const filteredData = useMemo(
+        () =>
+            nodes.filter(datum => {
+                return (
+                    datum.rect.percentage >= rectLabelsSkipPercentage &&
+                    datum.rect[
+                        ['left', 'right'].includes(direction)
+                            ? 'height'
+                            : 'width'
+                    ] >= rectLabelsSkipLength
+                );
+            }),
+        [nodes, rectLabelsSkipPercentage, rectLabelsSkipLength, direction],
+    );
+
     if (enableRectLabels && layers.includes('rectLabels')) {
         layerById.rectLabels = (
             <RectLabelsLayer<IciclesComputedDatum<RawDatum>>
                 key="rectLabels"
-                data={nodes}
+                data={filteredData}
                 label={rectLabel}
                 textColor={rectLabelsTextColor}
                 component={rectLabelsComponent}
+                offset={rectLabelsOffset}
+                baseOffsetLeft={baseOffsetLeft}
+                baseOffsetTop={baseOffsetTop}
             />
         );
     }
