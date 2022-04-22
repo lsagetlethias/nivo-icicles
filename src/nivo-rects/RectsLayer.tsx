@@ -1,4 +1,5 @@
-import { InheritedColorConfig } from '@nivo/colors';
+import { InheritedColorConfig, useInheritedColor } from '@nivo/colors';
+import { useTheme } from '@nivo/core';
 import React, { createElement } from 'react';
 import { RectMouseHandler, RectShape, RectShapeProps } from './RectShape';
 import { DatumWithRectAndColor } from './types';
@@ -30,8 +31,8 @@ export const RectsLayer = <TDatum extends DatumWithRectAndColor>({
     borderColor,
     component = RectShape,
 }: RectsLayerProps<TDatum>) => {
-    // const theme = useTheme();
-    // const getBorderColor = useInheritedColor<TDatum>(borderColor, theme);
+    const theme = useTheme();
+    const getBorderColor = useInheritedColor<TDatum>(borderColor, theme);
 
     const { transition, interpolate } = useRectsTransition<
         TDatum,
@@ -44,20 +45,17 @@ export const RectsLayer = <TDatum extends DatumWithRectAndColor>({
         enter: datum => ({
             opacity: 0,
             color: datum.color,
-            // borderColor: getBorderColor(datum),
-            borderColor: '#ccc',
+            borderColor: getBorderColor(datum),
         }),
         update: datum => ({
             opacity: 1,
             color: datum.color,
-            // borderColor: getBorderColor(datum),
-            borderColor: '#ccc',
+            borderColor: getBorderColor(datum),
         }),
         leave: datum => ({
             opacity: 0,
             color: datum.color,
-            // borderColor: getBorderColor(datum),
-            borderColor: '#ccc',
+            borderColor: getBorderColor(datum),
         }),
     });
 

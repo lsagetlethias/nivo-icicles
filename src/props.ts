@@ -11,7 +11,7 @@ export const defaultIciclesProps = {
     inheritColorFromParent: true,
     childColor: { from: 'color' },
     borderWidth: 1,
-    borderColor: 'white',
+    borderColor: { from: 'color' },
     enableRectLabels: false,
     rectLabel: 'formattedValue',
     rectLabelsTextColor: { theme: 'labels.text.fill' },
